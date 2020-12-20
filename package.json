@@ -23,6 +23,8 @@
   "license": "MIT",
   "dependencies": {
     "@zkochan/npm-conf": "^2.0.1",
-    "cross-spawn-promise": "^0.10.2"
+    "cross-spawn-promise": "^0.10.2",
+    "is-installed-globally": "^0.3.2",
+    "is-path-inside": "^3.0.2"
   }
 }
