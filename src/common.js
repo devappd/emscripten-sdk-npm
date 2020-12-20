@@ -29,7 +29,7 @@ function base() {
     return basedir;
 }
 
-function run(command, args) {
+function run(command, args, opts = {}) {
     return spawn(
         command,
         args,
@@ -38,7 +38,8 @@ function run(command, args) {
                 'inherit',
                 'inherit',
                 'inherit'
-            ]
+            ],
+            ...opts
         }
     );
 }

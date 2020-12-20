@@ -30,18 +30,16 @@ const emsdk = require('emsdk-npm');
 // `emsdk-checkout`.
 
 emsdk.update()
-.then(function() {
-    return emsdk.install('latest');
-})
-.then(function() {
-    return emsdk.activate('latest');
-})
-.then(function() {
-    return emsdk.run('emcc', [
-        // Arguments
-        'test/test.c', '-o', 'test/test.html'
-    ]);
-})
+.then(_ => emsdk.install('latest'))
+.then(_ => emsdk.activate('latest'))
+.then(_ => emsdk.run('emcc',
+        [
+            // Arguments
+            'test/test.c', '-o', 'test/test.html'
+        ], 
+        { /* child_process.spawn options, e.g., cwd */ }
+    )
+)
 .catch(function(err) {
     // handle err...
 });

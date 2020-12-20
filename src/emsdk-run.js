@@ -24,12 +24,12 @@ const os = require('os');
 const path = require('path');
 const common = require('./common.js');
 
-function emsdk_run(args) {
+function emsdk_run(args, opts = {}) {
     const basedir = common.base();
     const bindir = path.join(basedir, 'bin');
     const suffix = (os.type() == 'Windows_NT') ? '.bat' : '';
     const emsdk_run = path.join(bindir, 'emsdk-run' + suffix);
-    return common.run(emsdk_run, args);
+    return common.run(emsdk_run, args, opts);
 }
 
 if (require.main === module) {

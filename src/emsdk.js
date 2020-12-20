@@ -24,13 +24,13 @@ const os = require('os');
 const path = require('path');
 const common = require('./common.js');
 
-function emsdk(args) {
+function emsdk(args, opts = {}) {
     const emsdkargs = ['--embedded'].concat(args);
     const basedir = common.base();
     const emsdkdir = path.join(basedir, 'emsdk');
     const suffix = (os.type() == 'Windows_NT') ? '.bat' : '';
     const emsdk = path.join(emsdkdir, 'emsdk' + suffix);
-    return common.run(emsdk, emsdkargs);
+    return common.run(emsdk, emsdkargs, opts);
 }
 
 if (require.main === module) {
