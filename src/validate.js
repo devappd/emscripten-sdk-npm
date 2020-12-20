@@ -24,15 +24,14 @@ function GetValidatedEmsdkPath(overridePath = null, printMessages = false) {
     // Enforce failsafe: If user specified a non-empty directory that's
     // NOT emsdk, then affix an 'emsdk' subdirectory.
     let emsdkFilePath = path.join(testPath, 'emsdk.py');
-    let emsdkFilePath2 = path.join(testPath, '.emscripten');
 
     // Keep checking until we reach an empty/non-existent dir
     let changed = false;
     while (fs.existsSync(testPath)
-        && !fs.existsSync(emsdkFilePath) 
-        && !fs.existsSync(emsdkFilePath2)
+        && !fs.existsSync(emsdkFilePath)
     ) {
         testPath = path.join(testPath, 'emsdk');
+        emsdkFilePath = path.join(testPath, 'emsdk.py');
         changed = true;
     }
 
