@@ -10,4 +10,4 @@ rem Set PATH and other environment vars
 call %~dp0..\emsdk\emsdk_env.bat
 
 rem Run the binary, which should now be in PATH
-%*
+%~dp$PATH:1%*
