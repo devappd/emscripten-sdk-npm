@@ -1,17 +1,31 @@
 const emsdk = require('./emsdk.js');
 const emsdk_checkout = require('./emsdk-checkout.js');
 const emsdk_run = require('./emsdk-run.js');
+const shelljs = require('shelljs');
+const path = require('path');
+const common = require('./common.js');
+const fs = require('fs');
 
-function checkout() {
-    return emsdk_checkout.run()
-    .catch(function (err) {
-        if (!(err instanceof ChildProcessError)
-            || err.code == 0
-            || !err.message.contains('already exists'))
-            throw err;
-        // else, assume we already checked out
-        // and dismiss the error.
-    });
+function remove() {
+    let emsdk_path = path.join(common.base(), 'emsdk');
+
+    if (fs.existsSync(emsdk_path))
+        shelljs.rm('-rf', emsdk_path);
+
+    return Promise.resolve();
+}
+
+function checkout(force = false) {
+    let emsdk_path = path.join(common.base(), 'emsdk');
+
+    if (fs.existsSync(emsdk_path)) {
+        if (force)
+            remove();
+        else
+            return Promise.resolve();
+    }
+
+    return emsdk_checkout.run();
 }
 
 function update() {
@@ -54,6 +68,7 @@ function run(command, args) {
 }
 
 module.exports = {
+    remove: remove,
     update: update,
     install: install,
     activate: activate,

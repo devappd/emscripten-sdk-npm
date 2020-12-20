@@ -43,7 +43,7 @@ if (require.main === module) {
         process.exit(result.code);
     })
     .catch(function (err) {
-        if (err instanceof ChildProcessError
+        if (err.name === 'ChildProcessError'
             && err.code != 0)
             process.exit(err.code);
         else {
