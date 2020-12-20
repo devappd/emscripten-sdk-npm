@@ -101,11 +101,11 @@ function activate(version = 'latest') {
     ]);
 }
 
-function run(command, args) {
+function run(command, args, opts = {}) {
     let run_args = [command];
     if (args)
         run_args = run_args.concat(args);
-    return emsdk_run.run(run_args);
+    return emsdk_run.run(run_args, opts);
 }
 
 module.exports = {
