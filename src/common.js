@@ -32,11 +32,8 @@ function moduleBase() {
 
 function emsdkBase() {
     // Do sanity checks on the location and prints warning messages
-    let testPath = GetValidatedEmsdkPath();
-
-    // Will be falsy if the path is too long on Windows
-    if (!testPath)
-        throw new RangeError('Emscripten SDK installation path is invalid');
+    // If invalid, then throws.
+    let testPath = GetValidatedEmsdkPath(null, true);
     
     return testPath;
 }

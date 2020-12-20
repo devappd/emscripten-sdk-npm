@@ -7,8 +7,29 @@ const path = require('path');
 const fs = require('fs');
 const installedGlobally = require('is-installed-globally');
 const pathInside = require('is-path-inside');
+const { execSync } = require('child_process');
+
+// Retain a local copy of this variable for subsequent use.
+// npm-conf does not refresh during runtime.
+let _EmsdkWasRun = false;
 
 function GetValidatedEmsdkPath(overridePath = null, printMessages = false) {
+    // If we're printing messages, then throw an error on first run
+    // if emsdkPath is not set explicitly. We do this to give
+    // the user a fair warning as install messages no longer print on
+    // NPM 7.x.
+
+    // This config object does not refresh on updates in the current process.
+    // We could do so by calling require('@zkochan/npm-conf')(),
+    // but I don't want to re-read the file on every call to this method.
+    let firstRun;
+    const configResult = config.get('emsdkWasRun');
+
+    if (typeof configResult === 'undefined' || _EmsdkWasRun)
+        firstRun = !_EmsdkWasRun;
+    else
+        firstRun = !configResult;
+
     // Test the overridePath, or else
     // attempt to retrieve common install path. Priority:
     //
@@ -52,22 +73,28 @@ The path is now:
     const MAX_BASE_PATH = 85;
     if (process.platform === 'win32') {
         if (testPath.length > MAX_BASE_PATH) {
-            // \todo check if user has set
-            // HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\FileSystem\LongPathsEnabled == 1
-            // Always print this message due to imminent failure
-            console.warn(`
-WARNING: This path exceeds ${MAX_BASE_PATH} characters, meaning that
-Emscripten SDK installation will FAIL!
+            // Don't throw an error if we're silent, i.e., during install.
+            if (printMessages) {
+                // \todo check if user has set
+                // HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\FileSystem\LongPathsEnabled == 1
+                // Always print this message due to imminent failure
+                console.warn(`
+    WARNING: This path exceeds ${MAX_BASE_PATH} characters, meaning that
+    Emscripten SDK installation will FAIL!
 
-    ${testPath}
+        ${testPath}
 
-Set a manual EMSDK install path with this command:
+    Set a manual EMSDK install path with this command:
 
-    npm config set emsdk "your/installation/path"
-`.trimLeft());
+        npm config set emsdk "your/installation/path"
+    `.trimLeft());
 
-            // Refuse to install when the path is too long
-            return null;
+                // Always throw (unless silent), regardless of first run
+                throw new RangeError(`Emscripten SDK install path exceeds ${MAX_BASE_PATH} characters.`);
+            } else {
+                // Falsy result signals the calling function to reject path
+                return null;
+            }
         }
     }
 
@@ -81,7 +108,7 @@ Set a manual EMSDK install path with this command:
         //
         // UNLESS the configured path is NOT in global! Then warn.
         if (!installedGlobally || !emsdkPathIsGlobal) {
-            if (printMessages)
+            if (printMessages && firstRun)
                 console.warn(`
 WARNING: Emscripten SDK will be installed to a \`node_modules\`
 folder! To save disk space, you should set an installation path manually
@@ -98,7 +125,7 @@ with this command:
                 //
                 // 
                 if (installedGlobally) {
-                    if (printMessages)
+                    if (printMessages && firstRun)
                         console.warn(`
 You may update the \`emsdk\` variable in your NPM config to point to
 this global package:
@@ -106,13 +133,23 @@ this global package:
     npm config set emsdk "${path.join(modulePath, 'emsdk')}"
 `.trimLeft());
                 } else {
-                    if (printMessages)
+                    if (printMessages && firstRun)
                         console.warn(`
 Or install emsdk-npm as a global package:
 
-    npm install --global git+https://github.com/marcolovescode/emsdk-npm.git
+    npm install --global "https://github.com/marcolovescode/emsdk-npm/archive/master.tar.gz"
 `.trimLeft());
                 }
+            }
+
+            // Mark for throw if we're running for the first time
+            if (printMessages && firstRun) {
+                execSync('npm config set emsdkWasRun "True"');
+                _EmsdkWasRun = true;
+
+                console.warn(`
+This message is only printed once. To bypass, simply run your script again.
+`.trimLeft());
             }
         }
     }
@@ -137,6 +174,18 @@ Your configured installation path is:
     ${testPath}
 `.trimLeft())
         }
+    }
+
+    // Path is valid! Let the user know on first run.
+    if (printMessages && firstRun) {
+        execSync('npm config set emsdkWasRun "True"');
+        _EmsdkWasRun = true;
+
+        console.log(`
+Emscripten SDK installation path is set to:
+
+    ${testPath}
+    `.trimLeft());
     }
 
     // We're installable

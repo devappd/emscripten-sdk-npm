@@ -8,8 +8,12 @@ const execSync = require('child_process').execSync;
 const installedGlobally = require('is-installed-globally');
 
 function main() {
-    // Do sanity checks on install path and print warning messages.
-    const emsdkPath = GetValidatedEmsdkPath(null, true);
+    // Reset the firstRun flag to warn the user fairly about install path
+    // during first runtime.
+    execSync('npm config delete emsdkWasRun');
+
+    // Check if the install path is valid; if so, we retain it below.
+    const emsdkPath = GetValidatedEmsdkPath();
 
     // Truthy if the path is valid.
     if (emsdkPath) {
