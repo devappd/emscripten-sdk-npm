@@ -21,7 +21,7 @@
 
 const path = require('path');
 
-const child_process = require('child_process');
+const spawn = require('child-process-promise').spawn;
 
 function base() {
     const srcdir = path.dirname(module.filename);
@@ -30,7 +30,7 @@ function base() {
 }
 
 function run(command, args) {
-    const child = child_process.spawn(
+    return spawn(
         command,
         args,
         {
@@ -41,12 +41,6 @@ function run(command, args) {
             ]
         }
     );
-    child.on('exit', (e) => {
-        process.exit(e.code);
-    });
-    child.on('error', (err) => {
-        throw err;
-    });
 }
 
 module.exports = {

@@ -6,17 +6,48 @@ Proof of concept npm-module wrapper for [emscripten](https://emscripten.org/)'s 
 
 Downloads emscripten SDK binaries into the local node_modules directory and makes emscripten tools easy to call from within your parent npm module's build scripts, without disturbing the user's global emscripten configuration.
 
-## Usage
+## Command line usage
 
 ```sh
 npm install --save-dev emsdk-npm
 npx emsdk-checkout
 npx emsdk install latest
 npx emsdk activate latest
-npx emsdk-run emcc test.c -o test.html
+npx emsdk-run emcc test/test.c -o test/test.html
 ```
 
 You can choose a specific release of emscripten to install by changing the `emsdk` parameters from "`latest`".
+
+## Module usage
+
+```js
+const emsdk = require('emsdk-npm');
+
+// Optionally, you can call emsdk.update() first to
+// pre-emptively retrieve the latest emsdk version.
+//
+// Both emsdk.update() and emsdk.install() will call
+// `emsdk-checkout`.
+
+emsdk.update()
+.then(function() {
+    return emsdk.install('latest');
+})
+.then(function() {
+    return emsdk.activate('latest');
+})
+.then(function() {
+    return emsdk.run('emcc', [
+        // Arguments
+        'test/test.c', '-o', 'test/test.html'
+    ]);
+})
+.catch(function(err) {
+    // handle err...
+});
+```
+
+As with command line usage, you can choose a specific release of emscripten to install by changing the "`latest`" parameter.
 
 ## How it works
 

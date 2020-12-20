@@ -2,7 +2,7 @@
   "name": "emsdk-npm",
   "version": "0.2.2",
   "description": "experimental wrapping of emscripten's emsdk into an npm module",
-  "main": "index.js",
+  "main": "src/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -19,5 +19,8 @@
     "emscripten"
   ],
   "author": "brion@pobox.com",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "child-process-promise": "^2.2.1"
+  }
 }

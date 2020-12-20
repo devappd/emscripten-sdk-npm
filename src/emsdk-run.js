@@ -29,8 +29,26 @@ function emsdk_run(args) {
     const bindir = path.join(basedir, 'bin');
     const suffix = (os.type() == 'Windows_NT') ? '.bat' : '';
     const emsdk_run = path.join(bindir, 'emsdk-run' + suffix);
-    common.run(emsdk_run, args);
+    return common.run(emsdk_run, args);
 }
 
-const args = process.argv.slice(2);
-emsdk_run(args);
+if (require.main === module) {
+    const args = process.argv.slice(2);
+    emsdk_run(args)
+    .then(function (result) {
+        process.exit(result.code);
+    })
+    .catch(function (err) {
+        if (typeof err === 'ChildProcessError'
+            && err.code != 0)
+            process.exit(err.code);
+        else {
+            console.error(err.message);
+            process.exit(1);
+        }
+    });
+}
+
+module.exports = {
+    run: emsdk_run
+};

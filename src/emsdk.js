@@ -25,12 +25,31 @@ const path = require('path');
 const common = require('./common.js');
 
 function emsdk(args) {
+    const emsdkargs = ['--embedded'].concat(args);
     const basedir = common.base();
     const emsdkdir = path.join(basedir, 'emsdk');
     const suffix = (os.type() == 'Windows_NT') ? '.bat' : '';
     const emsdk = path.join(emsdkdir, 'emsdk' + suffix);
-    common.run(emsdk, args);
+    return common.run(emsdk, emsdkargs);
 }
 
-const args = process.argv.slice(2);
-emsdk(['--embedded'].concat(args));
+if (require.main === module) {
+    const args = process.argv.slice(2);
+    emsdk(args)
+    .then(function (result) {
+        process.exit(result.code);
+    })
+    .catch(function (err) {
+        if (typeof err === 'ChildProcessError'
+            && err.code != 0)
+            process.exit(err.code);
+        else {
+            console.error(err.message);
+            process.exit(1);
+        }
+    });
+}
+
+module.exports = {
+    run: emsdk
+};

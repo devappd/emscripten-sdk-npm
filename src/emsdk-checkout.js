@@ -24,13 +24,35 @@ const path = require('path');
 const common = require('./common.js');
 
 function git(args) {
-    common.run('git', args);
+    return common.run('git', args);
 }
 
-const gitdir = path.join(common.base(), 'emsdk');
+function emsdk_checkout() {
+    const gitdir = path.join(common.base(), 'emsdk');
 
-git([
-    'clone',
-    'https://github.com/emscripten-core/emsdk.git',
-    gitdir
-]);
+    return git([
+        'clone',
+        'https://github.com/emscripten-core/emsdk.git',
+        gitdir
+    ]);
+}
+
+if (require.main === module) {
+    emsdk_checkout()
+    .then(function (result) {
+        process.exit(result.code);
+    })
+    .catch(function (err) {
+        if (typeof err === 'ChildProcessError'
+            && err.code != 0)
+            process.exit(err.code);
+        else {
+            console.error(err.message);
+            process.exit(1);
+        }
+    });
+}
+
+module.exports = {
+    run: emsdk_checkout
+};
