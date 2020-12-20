@@ -29,8 +29,7 @@ const emsdk = require('emsdk-npm');
 // Both emsdk.update() and emsdk.install() will call
 // `emsdk-checkout`.
 
-emsdk.update()
-.then(_ => emsdk.install('latest'))
+emsdk.install('latest')
 .then(_ => emsdk.activate('latest'))
 .then(_ => emsdk.run('emcc',
         [
@@ -53,11 +52,13 @@ As with command line usage, you can choose a specific release of emscripten to i
 npm install --emsdk='/your/install/path' --save-dev emsdk-npm
 ```
 
-The `--emsdk` switch allows you to specify your own install path for `emsdk`. This path is saved to your `npmrc` user config. If this is not specified, `emsdk` will be installed into your `node_modules`.
+Use the `--emsdk` switch to specify your own install path for the Emscripten SDK. This path is saved to your `npmrc` user config and is referred to every time this package is installed.
 
-This package warns you if there's no configured install path. You should specify one to save disk space across modules. In addition, if the install path is longer than 85 characters on Windows, `emsdk` installation will fail.
+You should specify your own path in order to save disk space. This package may be duplicated across multiple `node_modules` folders and the EMSDK will be installed into each one if you do not specify your own path.
 
-You may also specify an install path as follows:
+In addition, if you are running on Windows, this package will warn you that EMSDK installation will fail if your install path is longer than 85 characters. This is a certainty when installing globally with `-g`.
+
+In addition to the above switch, you may specify an install path via this command:
 
 ```sh
 npm config set emsdk "/your/install/path"
