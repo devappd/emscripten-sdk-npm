@@ -9,7 +9,7 @@ const installedGlobally = require('is-installed-globally');
 
 function main() {
     // Do sanity checks on install path and print warning messages.
-    const emsdkPath = GetValidatedEmsdkPath();
+    const emsdkPath = GetValidatedEmsdkPath(null, true);
 
     // Truthy if the path is valid.
     if (emsdkPath) {

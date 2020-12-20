@@ -8,7 +8,7 @@ const fs = require('fs');
 const installedGlobally = require('is-installed-globally');
 const pathInside = require('is-path-inside');
 
-function GetValidatedEmsdkPath(overridePath = null) {
+function GetValidatedEmsdkPath(overridePath = null, printMessages = false) {
     // Test the overridePath, or else
     // attempt to retrieve common install path. Priority:
     //
@@ -38,7 +38,8 @@ function GetValidatedEmsdkPath(overridePath = null) {
 
     // Let the user know we changed the path if they configured it
     if (emsdkPath && changed) {
-        console.log(`
+        if (printMessages)
+            console.log(`
 Changing the EMSDK path because it pointed to a non-empty directory.
 The path is now:
 
@@ -54,6 +55,7 @@ The path is now:
         if (testPath.length > MAX_BASE_PATH) {
             // \todo check if user has set
             // HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\FileSystem\LongPathsEnabled == 1
+            // Always print this message due to imminent failure
             console.warn(`
 WARNING: This path exceeds ${MAX_BASE_PATH} characters, meaning that
 Emscripten SDK installation will FAIL!
@@ -80,7 +82,8 @@ Set a manual EMSDK install path with this command:
         //
         // UNLESS the configured path is NOT in global! Then warn.
         if (!installedGlobally || !emsdkPathIsGlobal) {
-            console.warn(`
+            if (printMessages)
+                console.warn(`
 WARNING: Emscripten SDK will be installed to a \`node_modules\`
 folder! To save disk space, you should set an installation path manually
 with this command:
@@ -95,19 +98,22 @@ with this command:
                 // configured path is not global.
                 //
                 // 
-                if (installedGlobally)
-                    console.warn(`
+                if (installedGlobally) {
+                    if (printMessages)
+                        console.warn(`
 You may update the \`emsdk\` variable in your NPM config to point to
 this global package:
 
     npm config set emsdk "${path.join(modulePath, 'emsdk')}"
 `.trimLeft());
-                else
-                    console.warn(`
+                } else {
+                    if (printMessages)
+                        console.warn(`
 Or install emsdk-npm as a global package:
 
-    npm install --global emsdk-npm
+    npm install --global git+https://github.com/marcolovescode/emscripten-build-npm.git
 `.trimLeft());
+                }
             }
         }
     }
@@ -120,6 +126,7 @@ Or install emsdk-npm as a global package:
         // if a previous global install already set `emsdk` in NPM config
         // to the global node_modules path.
         if (!emsdkPathIsGlobal && fs.existsSync(moduleEmsdkPath)) {
+            // Always print this message
             console.warn(`
 WARNING: An \`emsdk\` installation exists inside this module! You should
 delete this path:
