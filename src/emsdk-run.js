@@ -41,8 +41,8 @@ function emsdkRun(cmd, args, opts = {}) {
     const emsdkPath = common.emsdkBase();
 
     // Construct emsdk_env script command
-    const prefix = (process.platform !== 'win32') ? 'source ' : '';
-    const suffix = (process.platform === 'win32') ? '.bat' : '';
+    const prefix = (process.platform !== 'win32') ? '. ' : '';
+    const suffix = (process.platform === 'win32') ? '.bat' : '.sh';
     const emsdkEnvPath = path.join(emsdkPath, 'emsdk_env' + suffix);
 
     // We run two commands in one call to spawn() by enabling
@@ -53,7 +53,12 @@ function emsdkRun(cmd, args, opts = {}) {
     // the final command string in <node_internal>/child_process.js.
     // What gets passed to the shell (cmd.exe or /bin/bash) is
     // "emsdk_env.bat && your_cmd --args1 --args2"
-    const emsdkEnvCommand = `${prefix}"${emsdkEnvPath}" &&`;
+    const cwd = process.cwd();
+    // Change dir to make sure `emsdk_env` works correctly.
+    const emsdkEnvCommand = 
+        `cd "${emsdkPath}" && `+
+        `${prefix}"${emsdkEnvPath}" && ` +
+        `cd "${cwd}" && `;
     const commandArgs = [cmd, ...args];
 
     return common.run(emsdkEnvCommand, commandArgs, {...opts, "shell": true });
