@@ -39,15 +39,15 @@ function emsdk_checkout() {
 
 if (require.main === module) {
     emsdk_checkout()
-    .then(function (result) {
-        process.exit(result.code);
+    .then(function () {
+        process.exit(0);
     })
     .catch(function (err) {
-        if (err.name === 'ChildProcessError'
-            && err.code != 0)
-            process.exit(err.code);
+        if ('exitStatus' in err
+            && err.exitStatus != 0)
+            process.exit(err.exitStatus);
         else {
-            console.error(err.message);
+            console.error(err.stderr);
             process.exit(1);
         }
     });
