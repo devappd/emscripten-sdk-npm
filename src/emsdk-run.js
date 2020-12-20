@@ -20,26 +20,53 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-const os = require('os');
 const path = require('path');
 const common = require('./common.js');
 
-function emsdk_run(args, opts = {}) {
-    const basedir = common.base();
-    const bindir = path.join(basedir, 'bin');
-    const suffix = (os.type() == 'Windows_NT') ? '.bat' : '';
-    const emsdk_run = path.join(bindir, 'emsdk-run' + suffix);
-    const emsdk_path = path.join(common.emsdkBase(), 'emsdk');
-    return common.run(emsdk_run, [emsdk_path].concat(args), opts);
+function emsdkRun(cmd, args, opts = {}) {
+    // validate parameters
+    if (!cmd)
+        // nothing to do
+        return Promise.reject('No command passed to EMSDK.');
+    
+    // args needs to be an array for operations later
+    if (args) {
+        if (!Array.isArray(args))
+            args = [args];
+    } else
+        args = [];
+
+    // Retrieve our paths
+    const modulePath = common.moduleBase();
+    const emsdkPath = common.emsdkBase();
+
+    // Construct emsdk_env script command
+    const prefix = (process.platform !== 'win32') ? 'source ' : '';
+    const suffix = (process.platform === 'win32') ? '.bat' : '';
+    const emsdkEnvPath = path.join(emsdkPath, 'emsdk_env' + suffix);
+
+    // We run two commands in one call to spawn() by enabling
+    // { "shell": true }. The command is passed as "emsdk_env.bat &&", then
+    // the args array represents the second command and its args.
+    //
+    // This works because the args are concatenated to the command to create
+    // the final command string in <node_internal>/child_process.js.
+    // What gets passed to the shell (cmd.exe or /bin/bash) is
+    // "emsdk_env.bat && your_cmd --args1 --args2"
+    const emsdkEnvCommand = `${prefix}"${emsdkEnvPath}" &&`;
+    const commandArgs = [cmd, ...args];
+
+    return common.run(emsdkEnvCommand, commandArgs, {...opts, "shell": true });
 }
 
 if (require.main === module) {
     const args = process.argv.slice(2);
-    emsdk_run(args)
-    .then(function () {
+    const cmd = args.shift();
+
+    emsdkRun(cmd, args).then(_ => {
         process.exit(0);
     })
-    .catch(function (err) {
+    .catch(err => {
         if ('exitStatus' in err
             && err.exitStatus != 0)
             process.exit(err.exitStatus);
@@ -51,5 +78,5 @@ if (require.main === module) {
 }
 
 module.exports = {
-    run: emsdk_run
+    run: emsdkRun
 };

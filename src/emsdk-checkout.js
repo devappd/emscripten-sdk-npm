@@ -27,19 +27,18 @@ function git(args) {
     return common.run('git', args);
 }
 
-function emsdk_checkout() {
-    const gitdir = path.join(common.emsdkBase(), 'emsdk');
+function emsdkCheckout() {
+    const gitDir = common.emsdkBase();
 
     return git([
         'clone',
         'https://github.com/emscripten-core/emsdk.git',
-        gitdir
+        gitDir
     ]);
 }
 
 if (require.main === module) {
-    emsdk_checkout()
-    .then(function () {
+    emsdkCheckout().then(function () {
         process.exit(0);
     })
     .catch(function (err) {
@@ -54,5 +53,5 @@ if (require.main === module) {
 }
 
 module.exports = {
-    run: emsdk_checkout
+    run: emsdkCheckout
 };

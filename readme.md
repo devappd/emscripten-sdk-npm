@@ -55,7 +55,7 @@ npm install --emsdk='/your/install/path' --save-dev emsdk-npm
 
 The `--emsdk` switch allows you to specify your own install path for `emsdk`. This path is saved to your `npmrc` user config. If this is not specified, `emsdk` will be installed into your `node_modules`.
 
-This package warns you if there's no configured install path. You should specify one to save disk space across modules. In addition, if the install path is too long, `emsdk` installation will fail.
+This package warns you if there's no configured install path. You should specify one to save disk space across modules. In addition, if the install path is longer than 85 characters on Windows, `emsdk` installation will fail.
 
 You may also specify an install path as follows:
 

@@ -20,23 +20,21 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-const os = require('os');
 const path = require('path');
 const common = require('./common.js');
 
 function emsdk(args, opts = {}) {
-    const emsdkargs = ['--embedded'].concat(args);
-    const basedir = common.emsdkBase();
-    const emsdkdir = path.join(basedir, 'emsdk');
-    const suffix = (os.type() == 'Windows_NT') ? '.bat' : '';
-    const emsdk = path.join(emsdkdir, 'emsdk' + suffix);
-    return common.run(emsdk, emsdkargs, opts);
+    const emsdkArgs = ['--embedded'].concat(args);
+    const emsdkDir = common.emsdkBase();
+    const suffix = (process.platform === 'win32') ? '.bat' : '';
+    const emsdk = path.join(emsdkDir, 'emsdk' + suffix);
+    return common.run(emsdk, emsdkArgs, opts);
 }
 
 if (require.main === module) {
     const args = process.argv.slice(2);
-    emsdk(args)
-    .then(function () {
+
+    emsdk(args).then(function () {
         process.exit(0);
     })
     .catch(function (err) {

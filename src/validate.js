@@ -2,15 +2,47 @@
 //
 // Ensure that a manual EMSDK install path is set under MAX_BASE_PATH chars
 
+const config = require('@zkochan/npm-conf')();
 const path = require('path');
 const fs = require('fs');
 
-function ValidateEmsdkPath(emsdkPath) {
-    // emsdkPath and modulePath refer to the path BEFORE the "emsdk" repo folder
+function GetValidatedEmsdkPath(overridePath = null) {
+    // Test the overridePath, or else
+    // attempt to retrieve common install path. Priority:
+    //
+    // 1. Command line (`npm install --emsdk='path/to/emsdk' emsdk-npm`)
+    // 2. User npmrc config
+    // 3. Global npmrc config
+    let emsdkPath = overridePath || config.get('emsdk');
 
     // Presumes <module>/src
     let modulePath = path.resolve(path.join(path.dirname(module.filename), '..'));
     let testPath = (emsdkPath ? path.resolve(emsdkPath) : modulePath);
+
+    // Enforce failsafe: If user specified a non-empty directory that's
+    // NOT emsdk, then affix an 'emsdk' subdirectory.
+    let emsdkFilePath = path.join(testPath, 'emsdk.py');
+    let emsdkFilePath2 = path.join(testPath, '.emscripten');
+
+    // Keep checking until we reach an empty/non-existent dir
+    let changed = false;
+    while (fs.existsSync(testPath)
+        && !fs.existsSync(emsdkFilePath) 
+        && !fs.existsSync(emsdkFilePath2)
+    ) {
+        testPath = path.join(testPath, 'emsdk');
+        changed = true;
+    }
+
+    // Let the user know we changed the path if they configured it
+    if (emsdkPath && changed) {
+        console.log(`
+Changing the EMSDK path because it pointed to a non-empty directory.
+The path is now:
+
+    ${testPath}
+`.trimLeft());
+    }
 
     // If Windows, check if path exceeds 85 chars, or else EMSDK installation
     // will fail due to MAX_PATH limitation.
@@ -26,8 +58,7 @@ Emscripten SDK installation will FAIL!
 
     ${testPath}
 
-Set a manual EMSDK install path with this command. The \`emsdk\` folder
-will become a subdirectory of this path:
+Set a manual EMSDK install path with this command:
 
     npm config set emsdk "your/installation/path"
 `.trimLeft());
@@ -45,8 +76,6 @@ folder! To save disk space, you should set an installation path manually
 with this command:
 
     npm config set emsdk "/your/install/path"
-
-The \`emsdk\` folder will become a subdirectory of this path.
 `.trimLeft());
     }
     // If emsdkPath is set AND we have a local `emsdk` folder, warn that
@@ -72,4 +101,4 @@ Your configured installation path is:
     return testPath;
 }
 
-module.exports = ValidateEmsdkPath;
+module.exports = GetValidatedEmsdkPath;

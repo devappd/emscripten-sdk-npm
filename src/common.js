@@ -20,20 +20,19 @@
 // DEALINGS IN THE SOFTWARE.
 
 const path = require('path');
-const config = require('@zkochan/npm-conf')();
-const ValidateEmsdkPath = require('./validate.js');
+const GetValidatedEmsdkPath = require('./validate.js');
 const spawn = require('cross-spawn-promise');
 
 function moduleBase() {
+    // Top-level dir for this module
     const srcdir = path.dirname(module.filename);
     const basedir = path.dirname(srcdir);
     return basedir;
 }
 
 function emsdkBase() {
-    let emsdkPath = config.get('emsdk');
-    // Prints warning messages
-    let testPath = ValidateEmsdkPath(emsdkPath);
+    // Do sanity checks on the location and prints warning messages
+    let testPath = GetValidatedEmsdkPath();
 
     // Will be falsy if the path is too long on Windows
     if (!testPath)
@@ -58,7 +57,7 @@ function run(command, args, opts = {}) {
 }
 
 module.exports = {
-    base: moduleBase,
+    moduleBase: moduleBase,
     emsdkBase: emsdkBase,
     run: run
 };
