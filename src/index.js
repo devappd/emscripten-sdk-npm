@@ -5,7 +5,7 @@ const emsdk_run = require('emsdk-run.js');
 function checkout() {
     return emsdk_checkout.run()
     .except(function (err) {
-        if (typeof err !== 'ChildProcessError'
+        if (!(err instanceof ChildProcessError)
             || err.code == 0
             || !err.message.contains('already exists'))
             throw err;
