@@ -74,12 +74,6 @@ Note that emsdk's binary releases may not be available for all platforms, and so
 
 Note that emsdk is used in "embedded" mode where it does not alter the user's global `~/.emscripten`, so different projects may install and use different versions of emscripten.
 
-## Future plans
-
-* add JS interfaces to use via Grunt etc
-* add helper to auto-install an emscripten version based on parent's `package.json`
-* if this is good for folks, move repo to `emscripten-core` and use a more official-sounding package name
-
 ## License
 
 Copyright 2019 Brion Vibber
