@@ -45,10 +45,8 @@ if (require.main === module) {
         if ('exitStatus' in err
             && err.exitStatus != 0)
             process.exit(err.exitStatus);
-        else {
-            console.error(err.stderr);
+        else
             process.exit(1);
-        }
     });
 }
 
