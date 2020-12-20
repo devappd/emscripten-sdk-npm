@@ -1,6 +1,6 @@
-const emsdk = require('emsdk.js');
-const emsdk_checkout = require('emsdk-checkout.js');
-const emsdk_run = require('emsdk-run.js');
+const emsdk = require('./emsdk.js');
+const emsdk_checkout = require('./emsdk-checkout.js');
+const emsdk_run = require('./emsdk-run.js');
 
 function checkout() {
     return emsdk_checkout.run()
@@ -47,7 +47,9 @@ function activate(version = 'latest') {
 }
 
 function run(command, args) {
-    const run_args = command.concat(args);
+    let run_args = [command];
+    if (args)
+        run_args = run_args.concat(args);
     return emsdk_run.run(run_args);
 }
 
