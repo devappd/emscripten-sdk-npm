@@ -21,6 +21,6 @@
   "author": "brion@pobox.com",
   "license": "MIT",
   "dependencies": {
-    "child-process-promise": "^2.2.1"
+    "cross-spawn-promise": "^0.10.2"
   }
 }
