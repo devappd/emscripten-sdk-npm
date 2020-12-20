@@ -22,6 +22,7 @@
 
 const path = require('path');
 const common = require('./common.js');
+const fs = require('fs');
 
 function emsdkRun(cmd, args, opts = {}) {
     // validate parameters
@@ -41,8 +42,16 @@ function emsdkRun(cmd, args, opts = {}) {
     const emsdkPath = common.emsdkBase();
 
     // Construct emsdk_env script command
-    const prefix = (process.platform !== 'win32') ? '. ' : '';
-    const suffix = (process.platform === 'win32') ? '.bat' : '.sh';
+    let isBash = (process.platform !== 'win32'
+        || (typeof opts.shell === 'string'
+            && (path.basename(opts.shell).toLowerCase().includes('bash')
+                || path.basename(opts.shell).toLowerCase().includes('msys2')
+                || path.basename(opts.shell).toLowerCase().includes('cygwin')
+            )
+        )
+    );
+    const prefix = (isBash) ? '. ' : '';
+    const suffix = (isBash) ? '.sh' : '.bat';
     const emsdkEnvPath = path.join(emsdkPath, 'emsdk_env' + suffix);
 
     // We run two commands in one call to spawn() by enabling
@@ -55,13 +64,29 @@ function emsdkRun(cmd, args, opts = {}) {
     // "emsdk_env.bat && your_cmd --args1 --args2"
     const cwd = ('cwd' in opts) ? path.resolve(opts.cwd) : process.cwd();
     // Change dir to make sure `emsdk_env` works correctly.
-    const emsdkEnvCommand = 
+    let emsdkEnvCommand = 
         `cd "${emsdkPath}" && `+
         `${prefix}"${emsdkEnvPath}" && ` +
         `cd "${cwd}" && `;
-    const commandArgs = [cmd, ...args];
+    let commandArgs = [cmd, ...args];
 
-    return common.run(emsdkEnvCommand, commandArgs, {...opts, "shell": true });
+    // Allow user to specify a custom shell
+    let shellOpts = {};
+    if (typeof opts.shell !== 'string')
+        shellOpts.shell = true;
+
+    // Final pass to remove \ from paths
+    if (isBash && process.platform === 'win32') {
+        emsdkEnvCommand = emsdkEnvCommand.replaceAll('\\', '/');
+        commandArgs = commandArgs.map(val => {
+            if (fs.existsSync(val))
+                return val.replaceAll('\\', '/');
+            else
+                return val;
+        });
+    }
+
+    return common.run(emsdkEnvCommand, commandArgs, {...opts, ...shellOpts });
 }
 
 if (require.main === module) {
