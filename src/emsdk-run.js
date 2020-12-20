@@ -53,7 +53,7 @@ function emsdkRun(cmd, args, opts = {}) {
     // the final command string in <node_internal>/child_process.js.
     // What gets passed to the shell (cmd.exe or /bin/bash) is
     // "emsdk_env.bat && your_cmd --args1 --args2"
-    const cwd = process.cwd();
+    const cwd = ('cwd' in opts) ? path.resolve(opts.cwd) : process.cwd();
     // Change dir to make sure `emsdk_env` works correctly.
     const emsdkEnvCommand = 
         `cd "${emsdkPath}" && `+
