@@ -110,7 +110,7 @@ this global package:
                         console.warn(`
 Or install emsdk-npm as a global package:
 
-    npm install --global git+https://github.com/marcolovescode/emscripten-build-npm.git
+    npm install --global git+https://github.com/marcolovescode/emsdk-npm.git
 `.trimLeft());
                 }
             }
