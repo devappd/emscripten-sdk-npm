@@ -43,7 +43,48 @@ function update() {
     })
 }
 
-function install(version = 'latest') {
+function _getReleaseTags() {
+    let tagsFile = path.join(common.base(), 'emsdk', 'emscripten-releases-tags.txt');
+    let rawData = fs.readFileSync(tagsFile);
+    return JSON.parse(rawData);
+}
+
+function _getTotHash() {
+    let totFile = path.join(common.base(), 'emsdk', 'emscripten-releases-tot.txt');
+    return fs.readFileSync(totFile);
+}
+
+function _getInstalled(version) {
+    let hash;
+    let which;
+
+    try {
+        if (version === 'tot') {
+            hash = _getTotHash();
+            which = 'upstream';
+        } else {
+            which = (version.includes('fastcomp')) ? 'fastcomp' : 'upstream';
+
+            let tags = _getReleaseTags();
+            
+            if (version.includes('latest'))
+                hash = tags.releases[tags.latest];
+        }
+        
+        let versionFile = path.join(common.base(), 'emsdk', which, '.emsdk_version');
+        let versionData = fs.readFileSync(versionFile);
+
+        return versionData.includes(hash);
+    } catch (e) {
+        console.warn('Error retrieving installed EMSDK version: ' + e.message);
+        return false;
+    }
+}
+
+function install(version = 'latest', force = false) {
+    if (!force && _getInstalled(version))
+        return Promise.resolve();
+
     return checkout()
     .then(function () {
         return emsdk.run([
