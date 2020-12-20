@@ -117,31 +117,6 @@ with this command:
     npm config set emsdk "/your/install/path"
 `.trimLeft());
 
-            // Don't suggest to save global on Windows because the
-            // default global path exceeds MAX_PATH easily.
-            if (process.platform !== 'win32') {
-                // We get here if we're a global install, but the
-                // configured path is not global.
-                //
-                // 
-                if (installedGlobally) {
-                    if (printMessages && firstRun)
-                        console.warn(`
-You may update the \`emsdk\` variable in your NPM config to point to
-this global package:
-
-    npm config set emsdk "${path.join(modulePath, 'emsdk')}"
-`.trimLeft());
-                } else {
-                    if (printMessages && firstRun)
-                        console.warn(`
-Or install emsdk-npm as a global package:
-
-    npm install --global "https://github.com/marcolovescode/emsdk-npm/archive/master.tar.gz"
-`.trimLeft());
-                }
-            }
-
             // Mark for throw if we're running for the first time
             if (printMessages && firstRun) {
                 execSync('npm config set emsdkWasRun "True"');
@@ -150,6 +125,8 @@ Or install emsdk-npm as a global package:
                 console.warn(`
 This message is only printed once. To bypass, simply run your script again.
 `.trimLeft());
+
+                throw new Error('Exiting on first run to allow you to set a custom install path...');
             }
         }
     }
