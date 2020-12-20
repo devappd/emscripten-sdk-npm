@@ -7,7 +7,7 @@ const common = require('./common.js');
 const fs = require('fs');
 
 function remove() {
-    let emsdk_path = path.join(common.base(), 'emsdk');
+    let emsdk_path = path.join(common.emsdkBase(), 'emsdk');
 
     if (fs.existsSync(emsdk_path))
         shelljs.rm('-rf', emsdk_path);
@@ -16,7 +16,7 @@ function remove() {
 }
 
 function checkout(force = false) {
-    let emsdk_path = path.join(common.base(), 'emsdk');
+    let emsdk_path = path.join(common.emsdkBase(), 'emsdk');
 
     if (fs.existsSync(emsdk_path)) {
         if (force)
@@ -44,13 +44,13 @@ function update() {
 }
 
 function _getReleaseTags() {
-    let tagsFile = path.join(common.base(), 'emsdk', 'emscripten-releases-tags.txt');
+    let tagsFile = path.join(common.emsdkBase(), 'emsdk', 'emscripten-releases-tags.txt');
     let rawData = fs.readFileSync(tagsFile);
     return JSON.parse(rawData);
 }
 
 function _getTotHash() {
-    let totFile = path.join(common.base(), 'emsdk', 'emscripten-releases-tot.txt');
+    let totFile = path.join(common.emsdkBase(), 'emsdk', 'emscripten-releases-tot.txt');
     return fs.readFileSync(totFile);
 }
 
@@ -71,7 +71,7 @@ function _getInstalled(version) {
                 hash = tags.releases[tags.latest];
         }
         
-        let versionFile = path.join(common.base(), 'emsdk', which, '.emsdk_version');
+        let versionFile = path.join(common.emsdkBase(), 'emsdk', which, '.emsdk_version');
         let versionData = fs.readFileSync(versionFile);
 
         return versionData.includes(hash);

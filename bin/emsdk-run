@@ -1,13 +1,14 @@
-BINDIR=`dirname "$0"`
-DIR=`dirname "$BINDIR"`
+#!/bin/bash
 
 if [ "x$1" = "x" ]; then
     echo "emsdk-run"
-    echo "Usage: emsdk-run <command> [<arg>...]"
+    echo "Usage: emsdk-run <emsdk_path> <command> [<arg>...]"
     echo "Runs a given command within the context of the emsdk environment"
     echo "in the current node project."
     exit 1
 fi
+
+DIR="$1"
 
 # Set PATH and other environment vars
 # Manually change directory to work around bug with some shells:
@@ -18,4 +19,4 @@ cd "$DIR/emsdk"
 cd "$EMSDKRUN_CURDIR"
 
 # Run the binary, which should now be in PATH
-"$1" "${@:2}"
+"$2" "${@:3}"

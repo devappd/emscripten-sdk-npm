@@ -26,7 +26,7 @@ const common = require('./common.js');
 
 function emsdk(args, opts = {}) {
     const emsdkargs = ['--embedded'].concat(args);
-    const basedir = common.base();
+    const basedir = common.emsdkBase();
     const emsdkdir = path.join(basedir, 'emsdk');
     const suffix = (os.type() == 'Windows_NT') ? '.bat' : '';
     const emsdk = path.join(emsdkdir, 'emsdk' + suffix);

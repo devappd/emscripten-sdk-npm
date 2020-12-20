@@ -47,6 +47,22 @@ emsdk.update()
 
 As with command line usage, you can choose a specific release of emscripten to install by changing the "`latest`" parameter.
 
+## Install
+
+```sh
+npm install --emsdk='/your/install/path' --save-dev emsdk-npm
+```
+
+The `--emsdk` switch allows you to specify your own install path for `emsdk`. This path is saved to your `npmrc` user config. If this is not specified, `emsdk` will be installed into your `node_modules`.
+
+This package warns you if there's no configured install path. You should specify one to save disk space across modules. In addition, if the install path is too long, `emsdk` installation will fail.
+
+You may also specify an install path as follows:
+
+```sh
+npm config set emsdk "/your/install/path"
+```
+
 ## How it works
 
 With the `emsdk-checkout` command, emsdk is checked out via git into the module's subdirectory. The `emsdk` command is then callable , which allows installing and configuring a specific emscripten binary distribution.

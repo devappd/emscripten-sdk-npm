@@ -20,13 +20,26 @@
 // DEALINGS IN THE SOFTWARE.
 
 const path = require('path');
-
+const config = require('@zkochan/npm-conf')();
+const ValidateEmsdkPath = require('./validate.js');
 const spawn = require('cross-spawn-promise');
 
-function base() {
+function moduleBase() {
     const srcdir = path.dirname(module.filename);
     const basedir = path.dirname(srcdir);
     return basedir;
+}
+
+function emsdkBase() {
+    let emsdkPath = config.get('emsdk');
+    // Prints warning messages
+    let testPath = ValidateEmsdkPath(emsdkPath);
+
+    // Will be falsy if the path is too long on Windows
+    if (!testPath)
+        throw new RangeError('Emscripten SDK installation path is invalid');
+    
+    return testPath;
 }
 
 function run(command, args, opts = {}) {
@@ -45,6 +58,7 @@ function run(command, args, opts = {}) {
 }
 
 module.exports = {
-    base: base,
+    base: moduleBase,
+    emsdkBase: emsdkBase,
     run: run
 };

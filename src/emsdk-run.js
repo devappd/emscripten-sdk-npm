@@ -29,7 +29,7 @@ function emsdk_run(args, opts = {}) {
     const bindir = path.join(basedir, 'bin');
     const suffix = (os.type() == 'Windows_NT') ? '.bat' : '';
     const emsdk_run = path.join(bindir, 'emsdk-run' + suffix);
-    return common.run(emsdk_run, args, opts);
+    return common.run(emsdk_run, [common.emsdkBase()].concat(args), opts);
 }
 
 if (require.main === module) {

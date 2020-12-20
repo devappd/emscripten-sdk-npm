@@ -28,7 +28,7 @@ function git(args) {
 }
 
 function emsdk_checkout() {
-    const gitdir = path.join(common.base(), 'emsdk');
+    const gitdir = path.join(common.emsdkBase(), 'emsdk');
 
     return git([
         'clone',
