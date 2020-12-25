@@ -9,7 +9,7 @@ Downloads emscripten SDK binaries into your system and makes emscripten tools ea
 ## Command line usage
 
 ```sh
-npm install --save-dev emsdk-npm
+npm install --save-dev git+https://github.com/devappd/emsdk-npm.git
 npx emsdk-checkout
 npx emsdk install latest
 npx emsdk activate latest
@@ -52,7 +52,7 @@ Before you install this package, you must have at least Python 3.6 on your syste
 The install command is:
 
 ```sh
-npm install --save-dev emsdk-npm
+npm install --save-dev git+https://github.com/devappd/emsdk-npm.git
 ```
 
 By default, EMSDK is installed into your `node_modules` tree. You may specify a custom path by
