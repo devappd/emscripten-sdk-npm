@@ -68,7 +68,11 @@ function emsdkRun(cmd, args, opts = {}) {
         `cd "${emsdkPath}" && `+
         `${prefix}"${emsdkEnvPath}" && ` +
         `cd "${cwd}" && `;
-    let commandArgs = [cmd, ...args];
+    // Wrap paths around quotes to fix space usage
+    let commandArgs = [
+        (cmd.trim().includes(' ') ? `"${cmd.trim()}"` : cmd)
+        , ...args
+    ];
 
     // Allow user to specify a custom shell
     let shellOpts = {};
