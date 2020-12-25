@@ -4,7 +4,7 @@ const emsdkRun = require('./emsdk-run.js');
 const shelljs = require('shelljs');
 const path = require('path');
 const common = require('./common.js');
-const validatePath = require('./validate.js');
+const getEmsdkPath = require('./path.js');
 const fs = require('fs');
 
 function remove() {
@@ -119,5 +119,5 @@ module.exports = {
     install: install,
     activate: activate,
     run: run,
-    validatePath: validatePath
+    getEmsdkPath: getEmsdkPath
 };

@@ -20,7 +20,7 @@
 // DEALINGS IN THE SOFTWARE.
 
 const path = require('path');
-const GetValidatedEmsdkPath = require('./validate.js');
+const GetEmsdkPath = require('./path.js');
 const spawn = require('cross-spawn-promise');
 
 function moduleBase() {
@@ -32,8 +32,7 @@ function moduleBase() {
 
 function emsdkBase() {
     // Do sanity checks on the location and prints warning messages
-    // If invalid, then throws.
-    let testPath = GetValidatedEmsdkPath(null, true);
+    let testPath = GetEmsdkPath();
     
     return testPath;
 }

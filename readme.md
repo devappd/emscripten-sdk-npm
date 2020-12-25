@@ -4,7 +4,7 @@ Proof of concept npm-module wrapper for [emscripten](https://emscripten.org/)'s 
 
 ## What it does
 
-Downloads emscripten SDK binaries into the local node_modules directory and makes emscripten tools easy to call from within your parent npm module's build scripts, without disturbing the user's global emscripten configuration.
+Downloads emscripten SDK binaries into your system and makes emscripten tools easy to call from within your parent npm module's build scripts, without disturbing the user's global emscripten configuration.
 
 ## Command line usage
 
@@ -49,20 +49,17 @@ As with command line usage, you can choose a specific release of emscripten to i
 ## Install
 
 ```sh
-npm install --emsdk='/your/install/path' --save-dev emsdk-npm
+npm install --save-dev emsdk-npm
 ```
 
-Use the `--emsdk` switch to specify your own install path for the Emscripten SDK. This path is saved to your `npmrc` user config and is referred to every time this package is installed.
+By default, EMSDK is installed into your `node_modules` tree. You may specify a custom path by
+[modifying your NPM config](https://docs.npmjs.com/cli/v6/using-npm/config) as follows:
 
-You should specify your own path in order to save disk space. This package may be duplicated across multiple `node_modules` folders and the EMSDK will be installed into each one if you do not specify your own path.
+* Commit the path to your user `.npmrc`: `npm config set emsdk "/your/install/path"`
+* Set an environment variable: `set NPM_CONFIG_EMSDK=/your/install/path`
+* Use a config argument to NPM temporarily: `npm [command] --emsdk="/your/install/path"`
 
-In addition, if you are running on Windows, this package will warn you that EMSDK installation will fail if your install path is longer than 85 characters. This is a certainty when installing globally with `-g`.
-
-In addition to the above switch, you may specify an install path via this command:
-
-```sh
-npm config set emsdk "/your/install/path"
-```
+You should specify your own path in order to save disk space. In addition, if you are running on Windows, EMSDK installation will fail if your install path is longer than 85 characters.
 
 ## How it works
 
