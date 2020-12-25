@@ -28,7 +28,9 @@ function _CheckNonEmptyPath(testPath) {
     // NOT emsdk, then fail.
     let emsdkFilePath = path.join(testPath, 'emsdk.py');
 
-    if (fs.existsSync(emsdkFilePath)) {
+    if (fs.existsSync(testPath)
+        && !fs.existsSync(emsdkFilePath)
+    ) {
         console.warn(`
 WARNING: Your configured path is not empty! Specify an empty path.
 
