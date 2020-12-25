@@ -47,6 +47,10 @@ As with command line usage, you can choose a specific release of emscripten to i
 
 ## Install
 
+Before you install this package, you must have at least Python 3.6 on your system. You may download it at [python.org](https://www.python.org/downloads/), or refer to your OS's package manager.
+
+The install command is:
+
 ```sh
 npm install --save-dev emsdk-npm
 ```
