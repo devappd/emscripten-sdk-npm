@@ -32,13 +32,12 @@ const emsdk = require('emsdk-npm');
 emsdk.install('latest')
 .then(_ => emsdk.activate('latest'))
 .then(_ => emsdk.run('emcc',
-        [
-            // Arguments
-            'test/test.c', '-o', 'test/test.html'
-        ], 
-        { /* child_process.spawn options, e.g., cwd */ }
-    )
-)
+    [
+        // Arguments
+        'test/test.c', '-o', 'test/test.html'
+    ], 
+    { /* child_process.spawn options, e.g., cwd */ }
+))
 .catch(function(err) {
     // handle err...
 });
@@ -55,9 +54,9 @@ npm install --save-dev emsdk-npm
 By default, EMSDK is installed into your `node_modules` tree. You may specify a custom path by
 [modifying your NPM config](https://docs.npmjs.com/cli/v6/using-npm/config) as follows:
 
-* Commit the path to your user `.npmrc`: `npm config set emsdk "/your/install/path"`
-* Set an environment variable: `set NPM_CONFIG_EMSDK=/your/install/path`
-* Use a config argument to NPM temporarily: `npm [command] --emsdk="/your/install/path"`
+* Commit the path to your user `.npmrc` -- `npm config set emsdk "/your/install/path"`
+* Set an environment variable -- `set NPM_CONFIG_EMSDK=/your/install/path`
+* Use a config argument to NPM temporarily -- `npm [command] --emsdk="/your/install/path"`
 
 You should specify your own path in order to save disk space. In addition, if you are running on Windows, EMSDK installation will fail if your install path is longer than 85 characters.
 
@@ -73,7 +72,7 @@ Note that emsdk is used in "embedded" mode where it does not alter the user's gl
 
 ## License
 
-Copyright 2019 Brion Vibber
+Copyright 2019-2020 Brion Vibber and the emsdk-npm contributors
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 

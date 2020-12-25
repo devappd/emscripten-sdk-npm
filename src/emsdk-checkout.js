@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // emsdk-npm - emsdk-checkout.js 
-// Copyright 2019 Brion Vibber
+// Copyright 2019-2020 Brion Vibber and the emsdk-npm contributors
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the "Software"),
