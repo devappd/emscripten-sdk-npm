@@ -23,8 +23,8 @@
 const path = require('path');
 const common = require('./common.js');
 
-function git(args) {
-    return common.run('git', args);
+function git(args, opts = {}) {
+    return common.run('git', args, opts);
 }
 
 function emsdkCheckout() {
@@ -35,6 +35,16 @@ function emsdkCheckout() {
         'https://github.com/emscripten-core/emsdk.git',
         gitDir
     ]);
+}
+
+function emsdkPull() {
+    const gitDir = common.emsdkBase();
+
+    return git([
+        'pull'
+    ], {
+        'cwd': gitDir
+    });
 }
 
 if (require.main === module) {
@@ -51,5 +61,6 @@ if (require.main === module) {
 }
 
 module.exports = {
-    run: emsdkCheckout
+    run: emsdkCheckout,
+    pull: emsdkPull
 };

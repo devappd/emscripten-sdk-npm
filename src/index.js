@@ -51,12 +51,17 @@ function checkout(force = false) {
 }
 
 function update() {
-    // Checkout here to allow the user to call update()
-    // pre-emptively before install()ing
-    return checkout().then(function () {
-        // Because we clone from git, emsdk
-        // does nothing upon "update", but
-        // does suggest to use "update-tags" instead.
+    // Checkout here to save the user from calling checkout() before
+    // update(). This does not un-necessarily call `git clone` if the
+    // repo already exists.
+    return checkout()
+    .then(function () {
+        // Because we clone from git, we need to `git pull` to update
+        // the tag list in `emscripten-releases-tags.txt`
+        return emsdkCheckout.pull();
+    })
+    .then(function () {
+        // `emsdk update-tags` updates `emscripten-release-tot.txt`
         return emsdk.run([
             'update-tags'
         ]);
@@ -81,30 +86,37 @@ function _getTotHash() {
 }
 
 function _getInstalled(version) {
-    let hash;
-    let which;
+    // Set lookup defaults in case of exception
+    let which = (version.includes('fastcomp')) ? 'fastcomp' : 'upstream';
+    let hash = version;
+    let versionData = '';
 
     try {
-        if (version === 'tot') {
+        // Get hash from version
+        // Version hash is the same regardless if -fastcomp is in the string
+        if (version.includes('tot'))
             hash = _getTotHash();
-            which = 'upstream';
-        } else {
-            which = (version.includes('fastcomp')) ? 'fastcomp' : 'upstream';
-
+        else {
             let tags = _getReleaseTags();
             
             if (version.includes('latest'))
                 hash = tags.releases[tags.latest];
+            else {
+                let versionTest = version.replace('-fastcomp', '');
+                if (versionTest in tags.releases)
+                    hash = tags.releases[versionTest];
+                // else, user may have passed a complete hash string already
+            }
         }
         
+        // Get currently installed hash
         let versionFile = path.join(common.emsdkBase(), which, '.emsdk_version');
-        let versionData = fs.readFileSync(versionFile);
-
-        return versionData.includes(hash);
+        versionData = fs.readFileSync(versionFile);
     } catch (e) {
-        console.warn('Cannot retrieve installed EMSDK version: ' + e.message);
-        return false;
+        console.warn('Error retrieving installed EMSDK version: ' + e.message);
     }
+
+    return versionData.includes(hash);
 }
 
 ////////////////////////////////////////////////////////////////////////
@@ -112,6 +124,9 @@ function _getInstalled(version) {
 ////////////////////////////////////////////////////////////////////////
 
 function install(version = 'latest', force = false) {
+    // Check if requested EMSDK version is installed.
+    // Only one version can be installed at a time, and no other
+    // versions are cached.
     if (!force && _getInstalled(version))
         return Promise.resolve();
 
