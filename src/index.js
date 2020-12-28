@@ -85,7 +85,7 @@ function _getTotHash() {
     return fs.readFileSync(totFile);
 }
 
-function _getInstalled(version) {
+function getInstalled(version) {
     // Set lookup defaults in case of exception
     let which = (version.includes('fastcomp')) ? 'fastcomp' : 'upstream';
     let hash = version;
@@ -127,7 +127,7 @@ function install(version = 'latest', force = false) {
     // Check if requested EMSDK version is installed.
     // Only one version can be installed at a time, and no other
     // versions are cached.
-    if (!force && _getInstalled(version))
+    if (!force && getInstalled(version))
         return Promise.resolve();
 
     return checkout().then(function () {
@@ -155,5 +155,6 @@ module.exports = {
     install: install,
     activate: activate,
     run: run,
-    getEmsdkPath: getEmsdkPath
+    getEmsdkPath: getEmsdkPath,
+    getInstalled: getInstalled
 };
