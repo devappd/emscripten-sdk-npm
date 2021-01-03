@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// emsdk-npm - emsdk-checkout.js 
+// emsdk-npm - emsdk-pull.js 
 // Copyright 2019-2020 Brion Vibber and the emsdk-npm contributors
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -26,18 +26,18 @@ function git(args, opts = {}) {
     return common.run('git', args, opts);
 }
 
-function emsdkCheckout() {
+function emsdkPull() {
     const gitDir = common.emsdkBase();
 
     return git([
-        'clone',
-        'https://github.com/emscripten-core/emsdk.git',
-        gitDir
-    ]);
+        'pull'
+    ], {
+        'cwd': gitDir
+    });
 }
 
 if (require.main === module) {
-    emsdkCheckout().then(function () {
+    emsdkPull().then(function () {
         process.exit(0);
     })
     .catch(function (err) {
@@ -50,5 +50,5 @@ if (require.main === module) {
 }
 
 module.exports = {
-    run: emsdkCheckout
+    run: emsdkPull
 };

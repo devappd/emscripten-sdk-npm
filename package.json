@@ -1,14 +1,15 @@
 {
-  "name": "emsdk-npm",
-  "version": "0.2.3",
-  "description": "experimental wrapping of emscripten's emsdk into an npm module",
+  "name": "emscripten-sdk-npm",
+  "version": "0.3.0",
+  "description": "Download the Emscripten SDK into your system and access its commands via Node.js.",
   "main": "src/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "bin": {
-    "emsdk-checkout": "src/emsdk-checkout.js",
     "emsdk": "src/emsdk.js",
+    "emsdk-checkout": "src/emsdk-checkout.js",
+    "emsdk-pull": "src/emsdk-pull.js",
     "emsdk-run": "src/emsdk-run.js"
   },
   "repository": {

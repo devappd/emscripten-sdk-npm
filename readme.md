@@ -1,10 +1,8 @@
 # emsdk-npm
 
-Proof of concept npm-module wrapper for [emscripten](https://emscripten.org/)'s [emsdk](https://github.com/emscripten-core/emsdk).
+An NPM wrapper that downloads the [Emscripten SDK](https://emscripten.org/) binaries into your system and makes Emscripten tools easy to call from within your parent NPM module's build scripts.
 
-## What it does
-
-Downloads emscripten SDK binaries into your system and makes emscripten tools easy to call from within your parent npm module's build scripts, without disturbing the user's global emscripten configuration.
+By default, it does not disturb the user's global Emscripten configuration. You can also configure this package to refer to your existing installation.
 
 ## Command line usage
 
@@ -30,15 +28,18 @@ const emsdk = require('emsdk-npm');
 // `emsdk-checkout`.
 
 emsdk.install('latest')
-.then(_ => emsdk.activate('latest'))
-.then(_ => emsdk.run('emcc',
+.then(() => emsdk.activate('latest'))
+.then(() => emsdk.run(
+    'emcc',
     [
         // Arguments
         'test/test.c', '-o', 'test/test.html'
     ], 
-    { /* child_process.spawn options, e.g., cwd */ }
+    { 
+        // child_process.spawn options, e.g., cwd
+    }
 ))
-.catch(function(err) {
+.catch((err) => {
     // handle err...
 });
 ```
@@ -47,7 +48,7 @@ As with command line usage, you can choose a specific release of emscripten to i
 
 ## Install
 
-Before you install this package, you must have at least Python 3.6 on your system. You may download it at [python.org](https://www.python.org/downloads/), or refer to your OS's package manager.
+Before you install this package, you must install Python 3.6+ on your system. You may download it at [python.org](https://www.python.org/downloads/), or refer to your OS's package manager.
 
 The install command is:
 
@@ -60,7 +61,8 @@ By default, EMSDK is installed into your `node_modules` tree. You may specify a 
 
 |Method|Command
 |------|-------
-| Commit the path to your user `.npmrc` | `npm config set emsdk "/your/install/path"`
+| Save the path to your project `.npmrc` | `npm config --userconfig "/your/project/path/.npmrc" set emsdk "/your/install/path"`
+| Save the path to your user `.npmrc` | `npm config set emsdk "/your/install/path"`
 | Set an environment variable | `set NPM_CONFIG_EMSDK=/your/install/path`
 | Use a config argument to NPM temporarily | `npm [command] --emsdk="/your/install/path"`
 

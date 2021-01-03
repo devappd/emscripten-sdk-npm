@@ -22,51 +22,12 @@
 const emsdk = require('./emsdk.js');
 const emsdkCheckout = require('./emsdk-checkout.js');
 const emsdkRun = require('./emsdk-run.js');
+const emsdkPull = require('./emsdk-pull.js');
 const shelljs = require('shelljs');
 const path = require('path');
 const common = require('./common.js');
 const getEmsdkPath = require('./path.js');
 const fs = require('fs');
-
-function remove() {
-    let emsdkPath = common.emsdkBase();
-
-    if (fs.existsSync(emsdkPath))
-        shelljs.rm('-rf', emsdkPath);
-
-    return Promise.resolve();
-}
-
-function checkout(force = false) {
-    let emsdkPath = common.emsdkBase();
-
-    if (fs.existsSync(emsdkPath)) {
-        if (force)
-            remove();
-        else
-            return Promise.resolve();
-    }
-
-    return emsdkCheckout.run();
-}
-
-function update() {
-    // Checkout here to save the user from calling checkout() before
-    // update(). This does not un-necessarily call `git clone` if the
-    // repo already exists.
-    return checkout()
-    .then(function () {
-        // Because we clone from git, we need to `git pull` to update
-        // the tag list in `emscripten-releases-tags.txt`
-        return emsdkCheckout.pull();
-    })
-    .then(function () {
-        // `emsdk update-tags` updates `emscripten-release-tot.txt`
-        return emsdk.run([
-            'update-tags'
-        ]);
-    })
-}
 
 ////////////////////////////////////////////////////////////////////////
 // install() helpers
@@ -120,8 +81,47 @@ function getInstalled(version) {
 }
 
 ////////////////////////////////////////////////////////////////////////
-// End install() helpers
+// JS API
 ////////////////////////////////////////////////////////////////////////
+
+function remove() {
+    let emsdkPath = common.emsdkBase();
+
+    if (fs.existsSync(emsdkPath))
+        shelljs.rm('-rf', emsdkPath);
+
+    return Promise.resolve();
+}
+
+function checkout(force = false) {
+    let emsdkPath = common.emsdkBase();
+
+    if (fs.existsSync(emsdkPath)) {
+        if (force)
+            remove();
+        else
+            return Promise.resolve();
+    }
+
+    return emsdkCheckout.run();
+}
+
+function update() {
+    // Checkout here to save the user from calling checkout() before
+    // update(). This does not un-necessarily call `git clone` if the
+    // repo already exists.
+    return checkout().then(function () {
+        // Because we clone from git, we need to `git pull` to update
+        // the tag list in `emscripten-releases-tags.txt`
+        return emsdkPull.run();
+    })
+    .then(function () {
+        // `emsdk update-tags` updates `emscripten-release-tot.txt`
+        return emsdk.run([
+            'update-tags'
+        ]);
+    })
+}
 
 function install(version = 'latest', force = false) {
     // Check if requested EMSDK version is installed.
