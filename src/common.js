@@ -20,6 +20,7 @@
 // DEALINGS IN THE SOFTWARE.
 
 const path = require('path');
+const fs = require('fs');
 const GetEmsdkPath = require('./path.js');
 const spawn = require('cross-spawn-promise');
 
@@ -52,8 +53,62 @@ function run(command, args, opts = {}) {
     );
 }
 
+////////////////////////////////////////////////////////////////////////
+// install() helpers
+// Retrieve release tags and detect whether our requested version
+// is already active as indicated by `.emsdk_version`
+////////////////////////////////////////////////////////////////////////
+
+function getReleaseTags() {
+    let tagsFile = path.join(emsdkBase(), 'emscripten-releases-tags.txt');
+    let rawData = fs.readFileSync(tagsFile);
+    return JSON.parse(rawData);
+}
+
+function getTotHash() {
+    let totFile = path.join(emsdkBase(), 'emscripten-releases-tot.txt');
+    return fs.readFileSync(totFile);
+}
+
+function getInstalled(version) {
+    // Set lookup defaults in case of exception
+    let which = (version.includes('fastcomp')) ? 'fastcomp' : 'upstream';
+    let hash = version;
+    let versionData = '';
+
+    try {
+        // Get hash from version
+        // Version hash is the same regardless if -fastcomp is in the string
+        if (version.includes('tot'))
+            hash = getTotHash();
+        else {
+            let tags = getReleaseTags();
+            
+            if (version.includes('latest'))
+                hash = tags.releases[tags.latest];
+            else {
+                let versionTest = version.replace('-fastcomp', '');
+                if (versionTest in tags.releases)
+                    hash = tags.releases[versionTest];
+                // else, user may have passed a complete hash string already
+            }
+        }
+        
+        // Get currently installed hash
+        let versionFile = path.join(emsdkBase(), which, '.emsdk_version');
+        versionData = fs.readFileSync(versionFile);
+    } catch (e) {
+        console.warn('Error retrieving installed EMSDK version: ' + e.message);
+    }
+
+    return versionData.includes(hash);
+}
+
 module.exports = {
     moduleBase: moduleBase,
     emsdkBase: emsdkBase,
-    run: run
+    run: run,
+    getReleaseTags: getReleaseTags,
+    getTotHash: getTotHash,
+    getInstalled: getInstalled
 };

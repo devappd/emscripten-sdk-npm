@@ -24,61 +24,16 @@ const emsdkCheckout = require('./emsdk-checkout.js');
 const emsdkRun = require('./emsdk-run.js');
 const emsdkPull = require('./emsdk-pull.js');
 const shelljs = require('shelljs');
-const path = require('path');
 const common = require('./common.js');
 const getEmsdkPath = require('./path.js');
 const fs = require('fs');
+const path = require('path');
 
-////////////////////////////////////////////////////////////////////////
-// install() helpers
-// Retrieve release tags and detect whether our requested version
-// is already active as indicated by `.emsdk_version`
-////////////////////////////////////////////////////////////////////////
-
-function _getReleaseTags() {
-    let tagsFile = path.join(common.emsdkBase(), 'emscripten-releases-tags.txt');
-    let rawData = fs.readFileSync(tagsFile);
-    return JSON.parse(rawData);
-}
-
-function _getTotHash() {
-    let totFile = path.join(common.emsdkBase(), 'emscripten-releases-tot.txt');
-    return fs.readFileSync(totFile);
-}
-
-function getInstalled(version) {
-    // Set lookup defaults in case of exception
-    let which = (version.includes('fastcomp')) ? 'fastcomp' : 'upstream';
-    let hash = version;
-    let versionData = '';
-
-    try {
-        // Get hash from version
-        // Version hash is the same regardless if -fastcomp is in the string
-        if (version.includes('tot'))
-            hash = _getTotHash();
-        else {
-            let tags = _getReleaseTags();
-            
-            if (version.includes('latest'))
-                hash = tags.releases[tags.latest];
-            else {
-                let versionTest = version.replace('-fastcomp', '');
-                if (versionTest in tags.releases)
-                    hash = tags.releases[versionTest];
-                // else, user may have passed a complete hash string already
-            }
-        }
-        
-        // Get currently installed hash
-        let versionFile = path.join(common.emsdkBase(), which, '.emsdk_version');
-        versionData = fs.readFileSync(versionFile);
-    } catch (e) {
-        console.warn('Error retrieving installed EMSDK version: ' + e.message);
-    }
-
-    return versionData.includes(hash);
-}
+// This property restricts the version to be installed.
+// If hardVersion is null, then the installable version is unrestricted.
+const versionTools = require('./version.js');
+const hardVersion = versionTools.version;
+const defaultVersion = (hardVersion || 'latest');
 
 ////////////////////////////////////////////////////////////////////////
 // JS API
@@ -117,7 +72,17 @@ function checkout(force = false) {
     return emsdkCheckout.run();
 }
 
-function update() {
+function update(force = false) {
+    let emsdkPath = common.emsdkBase();
+    let emsdkFilePath = path.join(emsdkPath, 'emsdk.py');
+
+    // No need to refresh the repo if the package is versioned. The
+    // postinstall script takes care of this.
+    if (!force && hardVersion
+        // Verify that the EMSDK installation is active
+        && fs.existsSync(emsdkFilePath))
+        return Promise.resolve();
+
     // Because we clone from git, we need to `git pull` to update
     // the tag list in `emscripten-releases-tags.txt`
     return emsdkPull.run().then(function () {
@@ -128,11 +93,13 @@ function update() {
     })
 }
 
-function install(version = 'latest', force = false) {
+function install(version = defaultVersion, force = false) {
+    version = versionTools.validateVersion(version);
+
     // Check if requested EMSDK version is installed.
     // Only one version can be installed at a time, and no other
     // versions are cached.
-    if (!force && getInstalled(version))
+    if (!force && common.getInstalled(version))
         return Promise.resolve();
 
     return emsdk.run([
@@ -141,8 +108,10 @@ function install(version = 'latest', force = false) {
     ]);
 }
 
-function activate(version = 'latest') {
-    if (!getInstalled(version))
+function activate(version = defaultVersion) {
+    version = versionTools.validateVersion(version);
+
+    if (!common.getInstalled(version))
         throw new Error('Emscripten SDK version ${version} is not installed! Cannot activate.');
 
     return emsdk.run([
@@ -163,5 +132,7 @@ module.exports = {
     activate: activate,
     run: run,
     getEmsdkPath: getEmsdkPath,
-    getInstalled: getInstalled
+    getInstalled: common.getInstalled,
+    validateVersion: versionTools.validateVersion,
+    version: versionTools.version
 };

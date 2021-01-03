@@ -9,12 +9,12 @@ By default, it does not disturb the user's global Emscripten configuration. You 
 ```sh
 npm install --save-dev git+https://github.com/devappd/emsdk-npm.git
 npx emsdk-checkout
-npx emsdk install latest
-npx emsdk activate latest
+npx emsdk install <version>
+npx emsdk activate <version>
 npx emsdk-run emcc test/test.c -o test/test.html
 ```
 
-You can choose a specific release of emscripten to install by changing the `emsdk` parameters from "`latest`".
+See "Version Selection", below, for rules on selecting the SDK version.
 
 ## Module usage
 
@@ -27,8 +27,8 @@ const emsdk = require('emsdk-npm');
 
 emsdk.checkout()
 .then(() => emsdk.update())
-.then(() => emsdk.install('latest'))
-.then(() => emsdk.activate('latest'))
+.then(() => emsdk.install(version))
+.then(() => emsdk.activate(version))
 .then(() => emsdk.run(
     'emcc',
     [
@@ -44,7 +44,18 @@ emsdk.checkout()
 });
 ```
 
-As with command line usage, you can choose a specific release of emscripten to install by changing the "`latest`" parameter.
+Optionally, you may call `emsdk.update()` first to retrieve the latest SDK tags.
+
+See below for rules on selecting the SDK version.
+
+## Version selection
+
+If you install the `emscripten-sdk` package, then the SDK version is selected for you via the NPM
+package version. Change the version you need by editing your `package.json`. You do not need to
+specify anything for the `version` parameter in the CLI or JS API.
+
+If you install the `emscripten-sdk-npm` package or checkout from Git, then you will specify the
+SDK version as the `version` parameter in the CLI or JS API. To select the most recent version, you must specify `latest`.
 
 ## Install
 

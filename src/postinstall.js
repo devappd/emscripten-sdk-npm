@@ -1,6 +1,5 @@
-#!/usr/bin/env node
-// emsdk-npm - emsdk.js 
-// Copyright 2019-2020 Brion Vibber and the emsdk-npm contributors
+// emsdk-npm - postinstall.js
+// Copyright 2019-2021 Brion Vibber and the emsdk-npm contributors
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the "Software"),
@@ -19,34 +18,31 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
+////////////////////////////////////////////////////////////////////////
+//
+// Install EMSDK during `npm install` if the package is versioned.
 
-const path = require('path');
-const common = require('./common.js');
-const version = require('./version.js');
+const version = require('./version.js').version;
 
-function emsdk(args, opts = {}) {
-    const emsdkArgs = ['--embedded'].concat(args);
-    const emsdkDir = common.emsdkBase();
-    const suffix = (process.platform === 'win32') ? '.bat' : '';
-    const emsdk = path.join(emsdkDir, 'emsdk' + suffix);
-    return common.run(emsdk, emsdkArgs, opts);
+if (!version)
+    process.exit(0);
+
+const emsdk = require('./index.js');
+
+try {
+    emsdk.checkout()
+        .then(() => emsdk.update(true))
+        .then(() => emsdk.install(version, true))
+        .then(() => emsdk.activate(version))
+        .then(() => process.exit(0));
+} catch(e) {
+    console.warn(`Emscripten SDK install error:
+
+${e}
+
+Allowing NPM installation to finish. The SDK will try to install again
+upon first run.
+`);
+
+    process.exit(0);
 }
-
-if (require.main === module) {
-    const args = version.restrictVersionInArgs(process.argv.slice(2));
-
-    emsdk(args).then(function () {
-        process.exit(0);
-    })
-    .catch(function (err) {
-        if ('exitStatus' in err
-            && err.exitStatus != 0)
-            process.exit(err.exitStatus);
-        else
-            process.exit(1);
-    });
-}
-
-module.exports = {
-    run: emsdk
-};
