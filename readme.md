@@ -1,26 +1,27 @@
-# emsdk-npm
+# emscripten-sdk
 
-An NPM wrapper that downloads the [Emscripten SDK](https://emscripten.org/) binaries into your system and makes Emscripten tools easy to call from within your parent NPM module's build scripts.
+An NPM wrapper for the [Emscripten SDK](https://emscripten.org/).
 
-By default, it does not disturb the user's global Emscripten configuration. You can also configure this package to refer to your existing installation.
+The package installs the SDK and provides a command line and a JS interface. You may install either package below,  differing in how you specify the Emscripten version:
+
+|Package|Description
+|-------|-----------
+|[emscripten-sdk](https://www.npmjs.com/package/emscripten-sdk)|Specify the Emscripten version by installing the corresponding NPM version. Recommended.
+|[emscripten-sdk-npm](https://www.npmjs.com/package/emscripten-sdk-npm)|Specify the Emscripten version as a parameter in the command line and JS interfaces.
 
 ## Command line usage
 
 ```sh
-npm install --save-dev git+https://github.com/devappd/emsdk-npm.git
 npx emsdk-checkout
+# To update SDK tags, run both `npx emsdk-pull` and `npx emsdk update-tags`
 npx emsdk install <version>
 npx emsdk activate <version>
 npx emsdk-run emcc test/test.c -o test/test.html
 ```
 
-See "Version Selection", below, for rules on selecting the SDK version.
+The `version` parameter is not required when using the `emscripten-sdk` package.
 
-## Module usage
-
-The JS API maps to the terminal commands with some extra safety checks.
-The calls will check if the SDK and version are already installed. If
-they are, then the calls return immediately.
+## JavaScript usage
 
 ```js
 const emsdk = require('emsdk-npm');
@@ -44,57 +45,43 @@ emsdk.checkout()
 });
 ```
 
-Optionally, you may call `emsdk.update()` first to retrieve the latest SDK tags.
+The JS interface maps to the terminal commands with some extra safety checks. The interface will skip installation of the SDK and version if they already exist.
 
-See below for rules on selecting the SDK version.
-
-## Version selection
-
-If you install the `emscripten-sdk` package, then the SDK version is selected for you via the NPM
-package version. Change the version you need by editing your `package.json`. You do not need to
-specify anything for the `version` parameter in the CLI or JS API.
-
-If you install the `emscripten-sdk-npm` package or checkout from Git, then you will specify the
-SDK version as the `version` parameter in the CLI or JS API. To select the most recent version, you must specify `latest`.
+The `version` parameter is not required when using the `emscripten-sdk` package.
 
 ## Install
 
-Before you install this package, you must install Python 3.6+ on your system. You may download it at [python.org](https://www.python.org/downloads/), or refer to your OS's package manager.
-
-The install command is:
-
 ```sh
-npm install --save-dev git+https://github.com/devappd/emsdk-npm.git
+npm install --save-dev emscripten-sdk
 ```
 
-By default, EMSDK is installed into your `node_modules` tree. You may specify a custom path by
-[modifying your NPM config](https://docs.npmjs.com/cli/v6/using-npm/config) via one of the following:
+Before you install this package, you must install Python 3.6+ on your system. You may download it at [python.org](https://www.python.org/downloads/) or your OS's package manager.
 
-|Method|Command
+By default, the SDK is installed into your `node_modules` tree. You may specify a custom path by
+[modifying your NPM config](https://docs.npmjs.com/cli/v6/using-npm/config) via one of the commands below. Do this **before** you install this package:
+
+|Action|Command
 |------|-------
-| Save the path to your project `.npmrc` | `npm config --userconfig "/your/project/path/.npmrc" set emsdk "/your/install/path"`
-| Save the path to your user `.npmrc` | `npm config set emsdk "/your/install/path"`
-| Set an environment variable | `set NPM_CONFIG_EMSDK=/your/install/path`
-| Use a config argument to NPM temporarily | `npm [command] --emsdk="/your/install/path"`
+| Save the path to your project `.npmrc` | `npm config --userconfig "/your/project/root/.npmrc" set emsdk "/your/absolute/custom/path"`
+| Save the path to your user `.npmrc` | `npm config set emsdk "/your/absolute/custom/path"`
+| Set an environment variable | `set NPM_CONFIG_EMSDK=/your/absolute/custom/path`
+| Use a config argument to NPM temporarily | `npm [command] --emsdk="/your/absolute/custom/path"`
 
-You should specify your own path in order to save disk space. In addition, if you are running on Windows, EMSDK installation will fail if your install path is longer than 85 characters.
+## Version selection
 
-## How it works
+If you install the `emscripten-sdk` package, then the Emscripten version is selected via the NPM
+package version. Change the version you need by editing your `package.json`.
 
-With the `emsdk-checkout` command, emsdk is checked out via git into the module's subdirectory. The `emsdk` command is then callable , which allows installing and configuring a specific emscripten binary distribution.
+For example, to force version `1.40.1`, you specify the NPM version as `~1.40.1-0`. On the command line:
 
-The various tools like `emcc` and `em++` are then available through the `emsdk-run` command (they will not work until the '`activate`' step is done).
+```sh
+npm install --save-dev emscripten-sdk@~1.40.1-0
+```
 
-Note that emsdk's binary releases may not be available for all platforms, and sometimes release at different times.
+You may only specify single versions this way. You may not specify version ranges. If you do not specify a version, then the latest version will be selected. The above string will select the latest installer revision for that version.
 
-Note that emsdk is used in "embedded" mode where it does not alter the user's global `~/.emscripten`, so different projects may install and use different versions of emscripten.
+If you install the `emscripten-sdk-npm` package, then you will specify the `version` parameter in the command line and JS interfaces. To force version `1.40.1`, you specify `1.40.1`. To select the most recent version, you specify `latest`.
 
 ## License
 
-Copyright 2019-2020 Brion Vibber and the emsdk-npm contributors
-
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+MIT License; see LICENSE.
