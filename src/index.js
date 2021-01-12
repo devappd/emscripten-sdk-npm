@@ -102,12 +102,16 @@ function remove() {
 
 function checkout(force = false) {
     let emsdkPath = common.emsdkBase();
+    let emsdkFilePath = path.join(emsdkPath, 'emsdk.py');
 
     if (fs.existsSync(emsdkPath)) {
-        if (force)
-            remove();
-        else
-            return Promise.resolve();
+        if (fs.existsSync(emsdkFilePath)) {
+            if (force)
+                remove();
+            else
+                return Promise.resolve();
+        } else if (fs.readdirSync(emsdkPath).length > 0)
+            throw new RangeError(`${emsdkPath} is non-empty! Specify an empty path or an existing EMSDK installation.`);
     }
 
     return emsdkCheckout.run();
