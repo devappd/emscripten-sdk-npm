@@ -18,16 +18,16 @@ You can choose a specific release of emscripten to install by changing the `emsd
 
 ## Module usage
 
+The JS API maps to the terminal commands with some extra safety checks.
+The calls will check if the SDK and version are already installed. If
+they are, then the calls return immediately.
+
 ```js
 const emsdk = require('emsdk-npm');
 
-// Optionally, you can call emsdk.update() first to
-// pre-emptively retrieve the latest emsdk version.
-//
-// Both emsdk.update() and emsdk.install() will call
-// `emsdk-checkout`.
-
-emsdk.install('latest')
+emsdk.checkout()
+.then(() => emsdk.update())
+.then(() => emsdk.install('latest'))
 .then(() => emsdk.activate('latest'))
 .then(() => emsdk.run(
     'emcc',

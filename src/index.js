@@ -118,15 +118,9 @@ function checkout(force = false) {
 }
 
 function update() {
-    // Checkout here to save the user from calling checkout() before
-    // update(). This does not un-necessarily call `git clone` if the
-    // repo already exists.
-    return checkout().then(function () {
-        // Because we clone from git, we need to `git pull` to update
-        // the tag list in `emscripten-releases-tags.txt`
-        return emsdkPull.run();
-    })
-    .then(function () {
+    // Because we clone from git, we need to `git pull` to update
+    // the tag list in `emscripten-releases-tags.txt`
+    return emsdkPull.run().then(function () {
         // `emsdk update-tags` updates `emscripten-release-tot.txt`
         return emsdk.run([
             'update-tags'
@@ -141,15 +135,16 @@ function install(version = 'latest', force = false) {
     if (!force && getInstalled(version))
         return Promise.resolve();
 
-    return checkout().then(function () {
-        return emsdk.run([
-            'install',
-            version
-        ]);
-    });
+    return emsdk.run([
+        'install',
+        version
+    ]);
 }
 
 function activate(version = 'latest') {
+    if (!getInstalled(version))
+        throw new Error('Emscripten SDK version ${version} is not installed! Cannot activate.');
+
     return emsdk.run([
         'activate',
         version
@@ -162,6 +157,7 @@ function run(command, args, opts = {}) {
 
 module.exports = {
     remove: remove,
+    checkout: checkout,
     update: update,
     install: install,
     activate: activate,
