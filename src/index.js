@@ -86,9 +86,16 @@ function getInstalled(version) {
 
 function remove() {
     let emsdkPath = common.emsdkBase();
+    let emsdkFilePath = path.join(emsdkPath, 'emsdk.py');
 
-    if (fs.existsSync(emsdkPath))
-        shelljs.rm('-rf', emsdkPath);
+    // Only clear directory if we verify the directory is an EMSDK
+    // installation. Skip if the dir exists, but it's empty.
+    if (fs.existsSync(emsdkPath)) {
+        if (fs.existsSync(emsdkFilePath))
+            shelljs.rm('-rf', emsdkPath);
+        else if (fs.readdirSync(emsdkPath).length > 0)
+            throw new RangeError(`${emsdkPath} is not an EMSDK installation! ("emsdk.py" was not found.)`);
+    }
 
     return Promise.resolve();
 }
