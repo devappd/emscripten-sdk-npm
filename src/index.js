@@ -25,7 +25,7 @@ const emsdkRun = require('./emsdk-run.js');
 const emsdkPull = require('./emsdk-pull.js');
 const shelljs = require('shelljs');
 const common = require('./common.js');
-const getEmsdkPath = require('./path.js');
+const pathTools = require('./path.js');
 const fs = require('fs');
 const path = require('path');
 
@@ -131,7 +131,8 @@ module.exports = {
     install: install,
     activate: activate,
     run: run,
-    getEmsdkPath: getEmsdkPath,
+    getEmsdkPath: pathTools.getEmsdkPath,
+    setEmsdkPath: pathTools.setEmsdkPath,
     getInstalled: common.getInstalled,
     validateVersion: versionTools.validateVersion,
     version: versionTools.version

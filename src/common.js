@@ -21,7 +21,7 @@
 
 const path = require('path');
 const fs = require('fs');
-const GetEmsdkPath = require('./path.js');
+const GetEmsdkPath = require('./path.js').getEmsdkPath;
 const spawn = require('cross-spawn-promise');
 
 function moduleBase() {

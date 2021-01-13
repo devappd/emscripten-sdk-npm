@@ -23,6 +23,8 @@ const config = require('@zkochan/npm-conf')();
 const path = require('path');
 const fs = require('fs');
 
+let forcedPath = null;
+
 function _CheckNonEmptyPath(testPath) {
     // Sanity check: If user specified a non-empty directory that's
     // NOT emsdk, then fail.
@@ -67,7 +69,7 @@ Set a manual EMSDK install path with this command:
 
 function GetEmsdkPath() {
     // Retrieve the path from NPM config (cmd argument or .npmrc) or default to node_modules.
-    let configPath = config.get('emsdk');
+    let configPath = forcedPath || config.get('emsdk');
 
     // Presumes <module>/src
     let modulePath = path.resolve(path.join(path.dirname(module.filename), '..', 'emsdk'));
@@ -81,4 +83,11 @@ function GetEmsdkPath() {
     return testPath;
 }
 
-module.exports = GetEmsdkPath;
+function SetEmsdkPath(input) {
+    forcedPath = input;
+}
+
+module.exports = {
+    getEmsdkPath: GetEmsdkPath,
+    setEmsdkPath: SetEmsdkPath
+};
