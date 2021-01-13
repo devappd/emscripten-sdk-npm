@@ -1,6 +1,6 @@
 {
   "name": "emscripten-sdk",
-  "version": "1.39.11-1",
+  "version": "1.39.11-2",
   "description": "Download the Emscripten SDK into your system and access its commands via Node.js.",
   "main": "src/index.js",
   "scripts": {
