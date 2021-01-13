@@ -27,7 +27,7 @@
 
 const common = require('./common.js');
 
-const version = null;
+const version = '1.39.7';
 
 function restrictVersionInArgs(args) {
     if (version
