@@ -1,0 +1,50 @@
+name: deploy-versions
+
+on:
+  push:
+    branches:
+      - 'emsdk-*'
+
+jobs:
+  tests:
+    strategy:
+      matrix:
+        os: [macos-latest,windows-latest,ubuntu-latest]
+        node-version: [15.x, 14.x, 12.x]
+    
+    runs-on: ${{ matrix.os }}
+    
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v2
+      with:
+        node-version: ${{ matrix.node-version }}
+
+    - run: npm install
+    - run: npm test
+
+  bump-version:
+    needs: tests
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Bump NPM package version
+      uses: devappd/gh-action-bump-version@master
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        version: prerelease
+
+  publish:
+    needs: [tests, bump-version]
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Publish to NPM
+      run: npm publish --tag=${GITHUB_REF#refs/*/} --access public
+      env:
+        NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
