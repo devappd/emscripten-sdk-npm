@@ -23,7 +23,6 @@ const emsdk = require('./emsdk.js');
 const emsdkCheckout = require('./emsdk-checkout.js');
 const emsdkRun = require('./emsdk-run.js');
 const emsdkPull = require('./emsdk-pull.js');
-const shelljs = require('shelljs');
 const common = require('./common.js');
 const pathTools = require('./path.js');
 const fs = require('fs');
@@ -47,7 +46,7 @@ function remove() {
     // installation. Skip if the dir exists, but it's empty.
     if (fs.existsSync(emsdkPath)) {
         if (fs.existsSync(emsdkFilePath))
-            shelljs.rm('-rf', emsdkPath);
+            fs.rmdirSync(emsdkPath, { recursive: true });
         else if (fs.readdirSync(emsdkPath).length > 0)
             throw new RangeError(`${emsdkPath} is not an EMSDK installation! ("emsdk.py" was not found.)`);
     }
