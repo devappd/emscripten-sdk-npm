@@ -1,8 +1,15 @@
 # emscripten-sdk
 
+![test-branch](https://github.com/devappd/emsdk-npm/workflows/test-branch/badge.svg) ![emscripten-sdk](https://img.shields.io/npm/v/emscripten-sdk) ![mit-license](https://img.shields.io/github/license/devappd/emsdk-npm?color=yellow)
+
 An NPM wrapper for the [Emscripten SDK](https://emscripten.org/).
 
-This package installs the Emscripten compiler and provides a command line and a JS API to use in your build scripts.
+This package installs the Emscripten compiler and provides a command line and a JS interface to use in your build scripts.
+
+You may install one of these two packages:
+
+* [emscripten-sdk](https://www.npmjs.com/package/emscripten-sdk) -- Control the SDK version via the NPM package version. Recommended.
+* [emscripten-sdk-npm](https://www.npmjs.com/package/emscripten-sdk) -- Control the SDK version via CLI/API parameters. For advanced use.
 
 ## Command line usage
 
@@ -62,22 +69,15 @@ By default, the SDK is installed into your `node_modules` tree. You may specify 
 | Set an environment variable | `set NPM_CONFIG_EMSDK=/your/absolute/custom/path`
 | Use a config argument to NPM temporarily | `npm [command] --emsdk="/your/absolute/custom/path"`
 
-You may install one of two packages below, depending on how you want to specify the SDK version:
-
-|Package|Description
-|-------|-----------
-|[emscripten-sdk](https://www.npmjs.com/package/emscripten-sdk)|Specify the SDK version by installing the corresponding NPM version. Recommended.
-|[emscripten-sdk-npm](https://www.npmjs.com/package/emscripten-sdk-npm)|Specify the SDK version by inputting a parameter in the command line and JS API.
-
 ## Version selection
 
 If you install the `emscripten-sdk` package, then the Emscripten version is selected via the NPM
 package version. Change the version you need by editing your `package.json`.
 
-For example, to force version `1.40.1`, you specify the NPM version as `~1.40.1-0`. On the command line:
+For example, to force version `1.40.1`, you specify the NPM tag as `sdk-1.40.1`. On the command line:
 
 ```sh
-npm install --save-dev emscripten-sdk@~1.40.1-0
+npm install --save-dev emscripten-sdk@sdk-1.40.1
 ```
 
 You may only specify single versions this way. You may not specify version ranges. If you do not specify a version, then the latest version will be selected.
@@ -86,4 +86,4 @@ If you install the `emscripten-sdk-npm` package, then you will specify the `vers
 
 ## License
 
-MIT License; see LICENSE.
+MIT License.
