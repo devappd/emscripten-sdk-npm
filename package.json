@@ -1,6 +1,6 @@
 {
   "name": "emscripten-sdk",
-  "version": "1.39.13-0",
+  "version": "1.39.13-1",
   "description": "Download the Emscripten SDK into your system and access its commands via Node.js.",
   "main": "src/index.js",
   "scripts": {
@@ -18,7 +18,10 @@
     "url": "https://github.com/devappd/emsdk-npm"
   },
   "keywords": [
-    "emscripten", "emsdk", "webassembly", "wasm"
+    "emscripten",
+    "emsdk",
+    "webassembly",
+    "wasm"
   ],
   "author": "devappd",
   "license": "MIT",
