@@ -3,8 +3,10 @@ name: test-branch
 on:
   push:
     branches-ignore:
-      - 'deploy'
-      - 'emsdk/**'
+      - 'npm/*'
+      - 'emsdk/*'
+    tags-ignore:
+      - '*.*.*'
     paths-ignore:
       - '**.md'
       - '**LICENSE'

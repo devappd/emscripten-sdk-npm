@@ -1,0 +1,59 @@
+name: deploy-emsdk
+
+on:
+  push:
+    branches:
+      - 'emsdk/*'
+
+jobs:
+  tests:
+    strategy:
+      matrix:
+        os: [macos-latest,windows-latest,ubuntu-latest]
+        node-version: [15.x, 14.x, 12.x]
+    
+    runs-on: ${{ matrix.os }}
+    
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v2
+      with:
+        node-version: ${{ matrix.node-version }}
+
+    - run: npm install
+    - run: npm test
+
+  deploy:
+    needs: tests
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Setup Git user
+      run: |
+        git config user.name "github-actions[bot]"
+        git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+    - name: Bump version number
+      run: npm version prerelease
+    
+    - name: Push changes
+      uses: ad-m/github-push-action@master
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        branch: ${{ github.ref }}
+    
+    - name: Setup .npmrc to publish to NPM
+      uses: actions/setup-node@v2
+      with:
+        node-version: 12.x
+        registry-url: https://registry.npmjs.org
+
+    - name: Publish to NPM
+      run: npm publish --tag=${GITHUB_REF#refs/*/} --access public
+      env:
+        NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
