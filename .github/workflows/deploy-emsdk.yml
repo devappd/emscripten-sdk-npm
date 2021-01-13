@@ -3,7 +3,7 @@ name: deploy-emsdk
 on:
   push:
     branches:
-      - 'emsdk/*'
+      - 'sdk-*'
 
 jobs:
   tests:
@@ -54,6 +54,6 @@ jobs:
         registry-url: https://registry.npmjs.org
 
     - name: Publish to NPM
-      run: npm publish --tag=${GITHUB_REF#refs/*/} --access public
+      run: npm publish --tag=${GITHUB_REF##*/} --access public
       env:
         NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
