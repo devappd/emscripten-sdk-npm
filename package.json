@@ -4,7 +4,7 @@
   "description": "Download the Emscripten SDK into your system and access its commands via Node.js.",
   "main": "src/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "mocha",
     "postinstall": "node src/postinstall.js"
   },
   "bin": {
@@ -26,5 +26,8 @@
     "@zkochan/npm-conf": "^2.0.1",
     "cross-spawn-promise": "^0.10.2",
     "shelljs": "^0.8.4"
+  },
+  "devDependencies": {
+    "mocha": "^8.2.1"
   }
 }
