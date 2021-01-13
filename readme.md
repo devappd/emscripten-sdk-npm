@@ -1,6 +1,6 @@
 # emscripten-sdk
 
-![test-branch](https://github.com/devappd/emsdk-npm/workflows/test-branch/badge.svg) ![emscripten-sdk](https://img.shields.io/npm/v/emscripten-sdk) ![mit-license](https://img.shields.io/github/license/devappd/emsdk-npm?color=yellow)
+[![test-branch](https://github.com/devappd/emsdk-npm/workflows/test-branch/badge.svg)](https://github.com/devappd/emsdk-npm/actions?query=workflow%3Atest-branch) [![emscripten-sdk](https://img.shields.io/npm/v/emscripten-sdk)](https://www.npmjs.com/package/emscripten-sdk) [![mit-license](https://img.shields.io/github/license/devappd/emsdk-npm?color=yellow)](https://github.com/devappd/emsdk-npm/blob/master/LICENSE)
 
 An NPM wrapper for the [Emscripten SDK](https://emscripten.org/).
 
@@ -9,7 +9,7 @@ This package installs the Emscripten compiler and provides a command line and a 
 You may install one of these two packages:
 
 * [emscripten-sdk](https://www.npmjs.com/package/emscripten-sdk) -- Control the SDK version via the NPM package version. Recommended.
-* [emscripten-sdk-npm](https://www.npmjs.com/package/emscripten-sdk) -- Control the SDK version via CLI/API parameters. For advanced use.
+* [emscripten-sdk-npm](https://www.npmjs.com/package/emscripten-sdk-npm) -- Control the SDK version via CLI/API parameters. For advanced use.
 
 ## Command line usage
 

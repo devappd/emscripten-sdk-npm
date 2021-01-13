@@ -1,5 +1,12 @@
 # emsdk-npm CI
 
+## Secret Requirements
+
+| Secret                  | Description
+|-------------------------|------------
+| `NPM_TOKEN`             | An NPM automation token to deploy onto the registry.
+| `WORKFLOW_ACCESS_TOKEN` | A GitHub Personal Access Token with the `workflow` permission. Used to trigger builds in the `deploy-npm` workflow.
+
 ## Note on `package.json` version
 
 The NPM version in the code is fixed as "0.3.0" to dodge merge conflicts with the `sdk-*` branches.
