@@ -57,8 +57,12 @@ describe('emsdk-npm JavaScript API', function() {
     it('should write emscripten-releases-tot.txt to the install dir', async function() {
       await emsdk.update();
 
-      const testPath = path.join(installPath, 'emscripten-releases-tot.txt');
-      assert(fs.existsSync(testPath));
+      if (!emsdk.version) {
+        const testPath = path.join(installPath, 'emscripten-releases-tot.txt');
+        assert(fs.existsSync(testPath));
+      } else {
+        console.log('Running in versioned mode, no update() changes occurred.');
+      }
     })
   });
 
