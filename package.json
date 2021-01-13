@@ -18,7 +18,7 @@
     "url": "https://github.com/devappd/emsdk-npm"
   },
   "keywords": [
-    "emscripten"
+    "emscripten", "emsdk", "webassembly", "wasm"
   ],
   "author": "devappd",
   "license": "MIT",
