@@ -84,6 +84,21 @@ You may only specify single versions this way. You may not specify version range
 
 If you install the `emscripten-sdk-npm` package, then you will specify the `version` parameter in the command line and JS API. To force version `1.40.1`, you specify `1.40.1`. To select the most recent version, you specify `latest`.
 
+### Upgrading the SDK
+
+If you install the `emscripten-sdk` package, then you are locked into your selected SDK version unless
+you opt-in to a newer version. If you selected `latest`, then you are locked into the most recent
+version at the time of installation.
+
+To upgrade, enter this command once a new version is published:
+
+```sh
+npm install --save-dev emscripten-sdk@latest
+```
+
+If you install the `emscripten-sdk-npm` package, then you will receive updates so long as you update
+the SDK store via `npx emsdk-pull` or the API `emscripten.update()`, then install the `latest` SDK version.
+
 ## License
 
 MIT License.
