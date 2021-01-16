@@ -36,7 +36,7 @@ jobs:
     - name: Merge onto version branches
       uses: alagos/regex-merge@v1.1
       with:
-        accessToken: ${{ secrets.WORKFLOW_ACCESS_TOKEN }}
+        accessToken: ${{ secrets.REPO_ACCESS_TOKEN }}
         headBranch: ${{ github.sha }}
         branchRegex: '^sdk-.+'
 
