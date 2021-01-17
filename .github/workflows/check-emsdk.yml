@@ -4,9 +4,9 @@ on:
   push:
     branches:
       - 'master'
-    schedule:
-      # Daily, 7 AM UTC
-      - cron: '0 7 * * *'
+  schedule:
+    # Daily, 7 AM UTC
+    - cron: '0 7 * * *'
 
 jobs:
   check-emsdk:
