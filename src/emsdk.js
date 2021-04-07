@@ -25,11 +25,10 @@ const common = require('./common.js');
 const version = require('./version.js');
 
 function emsdk(args, opts = {}) {
-    const emsdkArgs = ['--embedded'].concat(args);
     const emsdkDir = common.emsdkBase();
     const suffix = (process.platform === 'win32') ? '.bat' : '';
     const emsdk = path.join(emsdkDir, 'emsdk' + suffix);
-    return common.run(emsdk, emsdkArgs, opts);
+    return common.run(emsdk, args, opts);
 }
 
 if (require.main === module) {
