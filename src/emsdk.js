@@ -24,9 +24,27 @@ const path = require('path');
 const common = require('./common.js');
 const version = require('./version.js');
 
+function emsdkContainsGitRef(emsdkDir, ref) {
+    let ret = true;
+    common.run("git", ["merge-base", "--is-ancestor", "HEAD", ref], { cwd: emsdkDir })
+    .then(() => {
+        ret = false;
+    })
+    .catch((err) => {
+        if (err.exitStatus !== 1) {
+            throw new Error(`Failed to check ancestor (${ref})`);
+        }
+    });
+    return ret;
+}
+
 function emsdk(args, opts = {}) {
-    const emsdkArgs = ['--embedded'].concat(args);
     const emsdkDir = common.emsdkBase();
+    let emsdkArgs = args;
+    if (!emsdkContainsGitRef(emsdkDir, "1.39.17")) {
+        // release 1.39.17 was the first one with embedded mode as default setting
+        emsdkArgs.push("--embedded");
+    }
     const suffix = (process.platform === 'win32') ? '.bat' : '';
     const emsdk = path.join(emsdkDir, 'emsdk' + suffix);
     return common.run(emsdk, emsdkArgs, opts);
